@@ -1,0 +1,86 @@
+# Netlify configuration — RED ACADEMY
+# Habilita URLs limpias (sin .html) y redirects
+
+[build]
+  publish = "."
+
+# Redirects para URLs sin extensión .html
+[[redirects]]
+  from = "/catalogo"
+  to = "/catalogo.html"
+  status = 200
+
+[[redirects]]
+  from = "/redm"
+  to = "/redm.html"
+  status = 200
+
+[[redirects]]
+  from = "/portal"
+  to = "/portal.html"
+  status = 200
+
+[[redirects]]
+  from = "/admin"
+  to = "/admin.html"
+  status = 200
+
+[[redirects]]
+  from = "/producto/factibilidad"
+  to = "/producto-factibilidad.html"
+  status = 200
+
+[[redirects]]
+  from = "/producto/presupuesto"
+  to = "/producto-presupuesto.html"
+  status = 200
+
+[[redirects]]
+  from = "/producto/financiamiento"
+  to = "/producto-financiamiento.html"
+  status = 200
+
+[[redirects]]
+  from = "/producto/str"
+  to = "/producto-str.html"
+  status = 200
+
+[[redirects]]
+  from = "/producto/contratos"
+  to = "/producto-contratos.html"
+  status = 200
+
+[[redirects]]
+  from = "/simuladores/factibilidad"
+  to = "/simuladores/factibilidad.html"
+  status = 200
+
+[[redirects]]
+  from = "/simuladores/presupuesto"
+  to = "/simuladores/presupuesto.html"
+  status = 200
+
+[[redirects]]
+  from = "/simuladores/financiamiento"
+  to = "/simuladores/financiamiento.html"
+  status = 200
+
+[[redirects]]
+  from = "/simuladores/str"
+  to = "/simuladores/str.html"
+  status = 200
+
+# Headers de seguridad
+[[headers]]
+  for = "/*"
+  [headers.values]
+    X-Frame-Options = "SAMEORIGIN"
+    X-XSS-Protection = "1; mode=block"
+    X-Content-Type-Options = "nosniff"
+    Referrer-Policy = "strict-origin-when-cross-origin"
+
+# Cache para assets estáticos (si se agregan en el futuro)
+[[headers]]
+  for = "/assets/*"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"

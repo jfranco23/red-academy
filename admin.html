@@ -1,0 +1,764 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Admin — RED ACADEMY</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Outfit:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+:root{
+  --gold:#C9A96E;--gold-l:#E8D4A8;--gold-d:#9B7A45;--gold-p:rgba(201,169,110,0.1);
+  --bg:#080808;--bg2:#0F0F0F;--bg3:#161616;--bg4:#1E1E1E;--bg5:#252525;
+  --text:#F0EBE0;--muted:#7A7570;--faint:#2A2820;
+  --b:rgba(201,169,110,0.2);--dim:rgba(201,169,110,0.07);
+  --green:#4CAF7D;--green-p:rgba(76,175,125,0.1);
+  --red:#E05555;--red-p:rgba(224,85,85,0.1);
+  --blue:#4ABDE0;--blue-p:rgba(74,189,224,0.1);
+  --sidebar:220px;
+}
+body{background:var(--bg);color:var(--text);font-family:'Outfit',sans-serif;font-weight:300;min-height:100vh;display:flex;}
+
+/* ── LOGIN ── */
+#login-screen{position:fixed;inset:0;background:var(--bg);display:flex;align-items:center;justify-content:center;z-index:1000;}
+.login-box{width:380px;border:1px solid var(--b);padding:48px 40px;background:var(--bg2);}
+.login-logo{font-family:'Cormorant Garamond',serif;font-size:20px;font-weight:600;letter-spacing:.12em;color:var(--gold);margin-bottom:4px;}
+.login-logo span{color:var(--text);font-weight:300;}
+.login-sub{font-size:11px;letter-spacing:.2em;text-transform:uppercase;color:var(--muted);margin-bottom:32px;}
+.login-box h2{font-family:'Cormorant Garamond',serif;font-size:28px;font-weight:300;margin-bottom:24px;}
+.field{margin-bottom:16px;}
+.field label{display:block;font-size:11px;letter-spacing:.15em;text-transform:uppercase;color:var(--muted);margin-bottom:8px;}
+.field input{width:100%;background:var(--bg3);border:1px solid var(--dim);color:var(--text);padding:12px 16px;font-family:'Outfit',sans-serif;font-size:14px;outline:none;transition:border-color .2s;}
+.field input:focus{border-color:var(--gold);}
+.field input::placeholder{color:var(--faint);}
+.btn-login{width:100%;background:var(--gold);color:#080808;padding:14px;font-family:'Outfit',sans-serif;font-size:12px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;border:none;cursor:pointer;margin-top:8px;transition:background .2s;}
+.btn-login:hover{background:var(--gold-l);}
+.login-hint{font-size:12px;color:var(--muted);text-align:center;margin-top:16px;}
+.login-hint strong{color:var(--gold);}
+
+/* ── SIDEBAR ── */
+.sidebar{width:var(--sidebar);background:var(--bg2);border-right:1px solid var(--dim);display:flex;flex-direction:column;height:100vh;position:fixed;left:0;top:0;}
+.sidebar-brand{padding:24px 20px;border-bottom:1px solid var(--dim);}
+.sidebar-brand .logo{font-family:'Cormorant Garamond',serif;font-size:16px;font-weight:600;letter-spacing:.12em;color:var(--gold);}
+.sidebar-brand .logo span{color:var(--text);font-weight:300;}
+.sidebar-brand .role{font-size:9px;letter-spacing:.2em;text-transform:uppercase;color:var(--muted);margin-top:4px;}
+nav.sidebar-nav{flex:1;padding:12px 0;overflow-y:auto;}
+.nav-section{font-size:9px;letter-spacing:.2em;text-transform:uppercase;color:var(--muted);padding:16px 20px 6px;}
+.nav-item{display:flex;align-items:center;gap:10px;padding:10px 20px;font-size:13px;color:var(--muted);cursor:pointer;transition:all .2s;border-left:2px solid transparent;}
+.nav-item:hover{color:var(--text);background:var(--dim);}
+.nav-item.active{color:var(--gold);border-left-color:var(--gold);background:var(--gold-p);}
+.nav-item .icon{font-size:16px;width:18px;text-align:center;}
+.sidebar-bottom{padding:16px 20px;border-top:1px solid var(--dim);}
+.logout-btn{display:flex;align-items:center;gap:8px;font-size:13px;color:var(--muted);cursor:pointer;transition:color .2s;}
+.logout-btn:hover{color:var(--red);}
+
+/* ── MAIN ── */
+.main{margin-left:var(--sidebar);flex:1;min-height:100vh;display:flex;flex-direction:column;}
+.topbar{height:64px;background:var(--bg2);border-bottom:1px solid var(--dim);display:flex;align-items:center;justify-content:space-between;padding:0 32px;position:sticky;top:0;z-index:50;}
+.topbar-title{font-family:'Cormorant Garamond',serif;font-size:22px;font-weight:300;}
+.topbar-title em{font-style:italic;color:var(--gold);}
+.topbar-actions{display:flex;align-items:center;gap:12px;}
+.btn{padding:9px 20px;font-size:12px;font-weight:500;letter-spacing:.08em;cursor:pointer;font-family:'Outfit',sans-serif;border:none;transition:all .2s;}
+.btn-gold{background:var(--gold);color:#080808;}
+.btn-gold:hover{background:var(--gold-l);}
+.btn-outline{background:transparent;border:1px solid var(--b);color:var(--muted);}
+.btn-outline:hover{border-color:var(--gold);color:var(--gold);}
+.btn-danger{background:var(--red-p);border:1px solid rgba(224,85,85,0.3);color:var(--red);}
+.btn-sm{padding:6px 14px;font-size:11px;}
+.content{padding:32px;flex:1;}
+
+/* PANELS */
+.panel{display:none;}
+.panel.active{display:block;}
+
+/* CARDS */
+.stats-row{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:32px;}
+.stat-card{background:var(--bg2);border:1px solid var(--dim);padding:20px 24px;}
+.stat-card .label{font-size:10px;letter-spacing:.15em;text-transform:uppercase;color:var(--muted);margin-bottom:8px;}
+.stat-card .value{font-family:'Cormorant Garamond',serif;font-size:40px;font-weight:300;color:var(--gold);line-height:1;}
+.stat-card .sub{font-size:12px;color:var(--muted);margin-top:4px;}
+
+/* TABLE */
+.table-wrap{background:var(--bg2);border:1px solid var(--dim);overflow:hidden;}
+.table-header{display:flex;align-items:center;justify-content:space-between;padding:16px 24px;border-bottom:1px solid var(--dim);}
+.table-header h3{font-size:14px;font-weight:500;}
+table{width:100%;border-collapse:collapse;}
+th{font-size:10px;letter-spacing:.15em;text-transform:uppercase;color:var(--muted);padding:12px 20px;text-align:left;border-bottom:1px solid var(--dim);font-weight:400;}
+td{padding:14px 20px;font-size:13px;border-bottom:1px solid var(--dim);color:var(--text);}
+tr:last-child td{border-bottom:none;}
+tr:hover td{background:rgba(255,255,255,0.015);}
+.tag{display:inline-block;padding:3px 10px;font-size:10px;letter-spacing:.1em;text-transform:uppercase;}
+.tag-gold{background:var(--gold-p);color:var(--gold);}
+.tag-green{background:var(--green-p);color:var(--green);}
+.tag-blue{background:var(--blue-p);color:var(--blue);}
+.tag-red{background:var(--red-p);color:var(--red);}
+
+/* MODULE EDITOR */
+.course-grid{display:grid;grid-template-columns:300px 1fr;gap:24px;}
+.module-list{background:var(--bg2);border:1px solid var(--dim);}
+.module-list-header{padding:16px 20px;border-bottom:1px solid var(--dim);display:flex;align-items:center;justify-content:space-between;}
+.module-item{padding:14px 20px;border-bottom:1px solid var(--dim);cursor:pointer;transition:background .15s;}
+.module-item:hover{background:var(--dim);}
+.module-item.active{background:var(--gold-p);border-left:2px solid var(--gold);}
+.module-item .mod-num{font-size:10px;color:var(--muted);letter-spacing:.1em;text-transform:uppercase;}
+.module-item .mod-title{font-size:13px;margin-top:2px;}
+.lesson-item{display:flex;align-items:center;gap:10px;padding:10px 20px 10px 36px;border-bottom:1px solid var(--dim);cursor:pointer;transition:background .15s;}
+.lesson-item:hover{background:rgba(255,255,255,0.02);}
+.lesson-dot{width:6px;height:6px;border-radius:50%;border:1px solid var(--muted);flex-shrink:0;}
+.lesson-dot.has-video{background:var(--green);border-color:var(--green);}
+.lesson-title{font-size:12px;color:var(--muted);flex:1;}
+.lesson-dur{font-size:11px;color:var(--faint);}
+
+/* EDITOR PANEL */
+.editor{background:var(--bg2);border:1px solid var(--dim);padding:28px;}
+.editor h3{font-family:'Cormorant Garamond',serif;font-size:22px;font-weight:300;margin-bottom:20px;}
+.form-group{margin-bottom:20px;}
+.form-group label{display:block;font-size:11px;letter-spacing:.15em;text-transform:uppercase;color:var(--muted);margin-bottom:8px;}
+.form-group input,.form-group textarea,.form-group select{width:100%;background:var(--bg3);border:1px solid var(--dim);color:var(--text);padding:11px 14px;font-family:'Outfit',sans-serif;font-size:13px;outline:none;transition:border-color .2s;resize:vertical;}
+.form-group input:focus,.form-group textarea:focus,.form-group select:focus{border-color:var(--gold);}
+.form-group select option{background:var(--bg3);}
+.upload-zone{border:1px dashed var(--b);padding:32px;text-align:center;cursor:pointer;transition:all .2s;position:relative;}
+.upload-zone:hover{border-color:var(--gold);background:var(--gold-p);}
+.upload-zone input[type=file]{position:absolute;inset:0;opacity:0;cursor:pointer;}
+.upload-zone .upload-icon{font-size:32px;margin-bottom:10px;}
+.upload-zone p{font-size:13px;color:var(--muted);}
+.upload-zone .upload-hint{font-size:11px;color:var(--faint);margin-top:4px;}
+.video-preview{background:var(--bg3);border:1px solid var(--dim);aspect-ratio:16/9;display:flex;align-items:center;justify-content:center;margin-top:12px;overflow:hidden;position:relative;}
+.video-preview iframe,.video-preview video{width:100%;height:100%;border:none;}
+.video-preview .no-video{color:var(--faint);font-size:13px;text-align:center;}
+.progress-bar{height:3px;background:var(--dim);margin-top:8px;}
+.progress-fill{height:100%;background:var(--gold);transition:width .3s;}
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:16px;}
+.switch-row{display:flex;align-items:center;justify-content:space-between;padding:12px 0;border-bottom:1px solid var(--dim);}
+.switch-row label{font-size:13px;color:var(--text);}
+.switch{position:relative;width:40px;height:22px;}
+.switch input{opacity:0;width:0;height:0;}
+.switch-slider{position:absolute;inset:0;background:var(--bg5);cursor:pointer;transition:.3s;border-radius:11px;}
+.switch-slider::before{content:'';position:absolute;width:16px;height:16px;left:3px;bottom:3px;background:var(--muted);transition:.3s;border-radius:50%;}
+.switch input:checked+.switch-slider{background:var(--gold);}
+.switch input:checked+.switch-slider::before{transform:translateX(18px);background:#080808;}
+
+/* DROPZONE ACTIVE */
+.file-list{margin-top:12px;}
+.file-item{display:flex;align-items:center;gap:12px;padding:10px 14px;background:var(--bg3);border:1px solid var(--dim);margin-bottom:6px;}
+.file-icon{font-size:20px;}
+.file-info{flex:1;}
+.file-name{font-size:13px;}
+.file-size{font-size:11px;color:var(--muted);}
+.file-remove{font-size:16px;color:var(--muted);cursor:pointer;transition:color .2s;}
+.file-remove:hover{color:var(--red);}
+
+/* TOAST */
+.toast{position:fixed;bottom:24px;right:24px;background:var(--bg3);border:1px solid var(--b);padding:14px 20px;font-size:13px;display:flex;align-items:center;gap:10px;z-index:999;transform:translateY(100px);opacity:0;transition:all .3s;}
+.toast.show{transform:translateY(0);opacity:1;}
+.toast-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0;}
+.toast-dot.green{background:var(--green);}
+.toast-dot.gold{background:var(--gold);}
+
+/* STUDENT CARD */
+.student-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;}
+.student-card{background:var(--bg2);border:1px solid var(--dim);padding:20px;}
+.student-avatar{width:44px;height:44px;border-radius:50%;background:var(--gold-p);border:1px solid var(--b);display:flex;align-items:center;justify-content:center;font-size:16px;font-weight:500;color:var(--gold);margin-bottom:12px;}
+.student-name{font-size:15px;font-weight:500;margin-bottom:2px;}
+.student-email{font-size:12px;color:var(--muted);margin-bottom:12px;}
+.student-progress{margin-top:10px;}
+.progress-label{display:flex;justify-content:space-between;font-size:11px;color:var(--muted);margin-bottom:4px;}
+
+/* MODAL */
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.75);z-index:900;display:flex;align-items:center;justify-content:center;opacity:0;pointer-events:none;transition:opacity .2s;}
+.modal-overlay.open{opacity:1;pointer-events:all;}
+.modal{background:var(--bg2);border:1px solid var(--b);width:560px;max-height:80vh;overflow-y:auto;}
+.modal-header{padding:24px 28px;border-bottom:1px solid var(--dim);display:flex;align-items:center;justify-content:space-between;}
+.modal-header h3{font-family:'Cormorant Garamond',serif;font-size:22px;font-weight:300;}
+.modal-close{font-size:20px;color:var(--muted);cursor:pointer;transition:color .2s;}
+.modal-close:hover{color:var(--text);}
+.modal-body{padding:28px;}
+.modal-footer{padding:20px 28px;border-top:1px solid var(--dim);display:flex;gap:12px;justify-content:flex-end;}
+</style>
+</head>
+<body>
+
+<!-- LOGIN -->
+<div id="login-screen">
+  <div class="login-box">
+    <div class="login-logo">RED <span>ACADEMY</span></div>
+    <div class="login-sub">Panel de Administración</div>
+    <h2>Iniciar sesión</h2>
+    <div class="field"><label>Usuario</label><input type="text" id="login-user" placeholder="admin@redacademy.com" value="admin@redacademy.com"></div>
+    <div class="field"><label>Contraseña</label><input type="password" id="login-pass" placeholder="••••••••" value="admin123"></div>
+    <button class="btn-login" onclick="doLogin()">Ingresar →</button>
+    <p class="login-hint">Acceso: <strong>admin@redacademy.com</strong> / <strong>admin123</strong></p>
+  </div>
+</div>
+
+<!-- APP -->
+<div id="app" style="display:none;width:100%;display:none;">
+
+<!-- SIDEBAR -->
+<aside class="sidebar">
+  <div class="sidebar-brand">
+    <div class="logo">RED <span>ACADEMY</span></div>
+    <div class="role">Panel de Administración</div>
+  </div>
+  <nav class="sidebar-nav">
+    <div class="nav-section">Principal</div>
+    <div class="nav-item active" onclick="showPanel('dashboard',this)"><span class="icon">▦</span> Dashboard</div>
+    <div class="nav-item" onclick="showPanel('courses',this)"><span class="icon">▶</span> Cursos & Videos</div>
+    <div class="nav-item" onclick="showPanel('products',this)"><span class="icon">⬇</span> Ebooks & Archivos</div>
+    <div class="nav-section">Gestión</div>
+    <div class="nav-item" onclick="showPanel('students',this)"><span class="icon">◎</span> Estudiantes</div>
+    <div class="nav-item" onclick="showPanel('access',this)"><span class="icon">◈</span> Accesos & Contraseñas</div>
+    <div class="nav-section">Plataforma</div>
+    <div class="nav-item" onclick="showPanel('settings',this)"><span class="icon">◉</span> Configuración</div>
+  </nav>
+  <div class="sidebar-bottom">
+    <div class="logout-btn" onclick="doLogout()"><span>⊗</span> Cerrar sesión</div>
+  </div>
+</aside>
+
+<!-- MAIN -->
+<main class="main">
+  <div class="topbar">
+    <div class="topbar-title" id="topbar-title">Dashboard <em>General</em></div>
+    <div class="topbar-actions">
+      <button class="btn btn-outline btn-sm" onclick="window.open('redevacademy_portal.html','_blank')">Ver portal →</button>
+      <button class="btn btn-gold btn-sm" id="topbar-action" onclick="topbarAction()">+ Nueva lección</button>
+    </div>
+  </div>
+
+  <div class="content">
+
+    <!-- DASHBOARD -->
+    <div class="panel active" id="panel-dashboard">
+      <div class="stats-row">
+        <div class="stat-card"><div class="label">Estudiantes activos</div><div class="value" id="stat-students">0</div><div class="sub">Total inscritos</div></div>
+        <div class="stat-card"><div class="label">Módulos publicados</div><div class="value">8</div><div class="sub">Curso REDM</div></div>
+        <div class="stat-card"><div class="label">Videos subidos</div><div class="value" id="stat-videos">0</div><div class="sub">En el curso</div></div>
+        <div class="stat-card"><div class="label">Ebooks activos</div><div class="value">5</div><div class="sub">Disponibles</div></div>
+      </div>
+      <div class="table-wrap">
+        <div class="table-header"><h3>Estudiantes recientes</h3><button class="btn btn-outline btn-sm" onclick="showPanel('students',document.querySelectorAll('.nav-item')[3])">Ver todos</button></div>
+        <table><thead><tr><th>Nombre</th><th>Email</th><th>Inscripción</th><th>Progreso</th><th>Estado</th></tr></thead>
+        <tbody id="dashboard-students"></tbody></table>
+      </div>
+    </div>
+
+    <!-- COURSES & VIDEOS -->
+    <div class="panel" id="panel-courses">
+      <div class="course-grid">
+        <div>
+          <div class="module-list">
+            <div class="module-list-header"><span style="font-size:13px;font-weight:500;">Módulos REDM</span><button class="btn btn-gold btn-sm" onclick="addModule()">+ Módulo</button></div>
+            <div id="module-tree"></div>
+          </div>
+        </div>
+        <div class="editor" id="lesson-editor">
+          <h3>Selecciona una lección</h3>
+          <p style="color:var(--muted);font-size:13px;line-height:1.7;">Haz clic en una lección del árbol para editar su contenido, subir video y gestionar materiales descargables.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- PRODUCTS / EBOOKS -->
+    <div class="panel" id="panel-products">
+      <div style="display:grid;grid-template-columns:1fr 400px;gap:24px;">
+        <div>
+          <div class="table-wrap">
+            <div class="table-header"><h3>Ebooks & Recursos</h3></div>
+            <table><thead><tr><th>Producto</th><th>Tipo</th><th>Precio</th><th>Archivo</th><th>Acciones</th></tr></thead>
+            <tbody id="products-table"></tbody></table>
+          </div>
+        </div>
+        <div class="editor">
+          <h3>Subir nuevo archivo</h3>
+          <div class="form-group"><label>Nombre del producto</label><input type="text" id="prod-name" placeholder="Ej: Análisis de Factibilidad"></div>
+          <div class="form-group"><label>Tipo</label>
+            <select id="prod-type"><option value="ebook">Ebook (PDF)</option><option value="plantilla">Plantilla (Excel)</option><option value="contratos">Pack de Contratos (Word)</option><option value="otro">Otro</option></select>
+          </div>
+          <div class="form-group"><label>Precio (USD)</label><input type="number" id="prod-price" placeholder="47"></div>
+          <div class="form-group"><label>Archivo (PDF / Excel / ZIP)</label>
+            <div class="upload-zone" id="prod-dropzone">
+              <input type="file" id="prod-file" accept=".pdf,.xlsx,.xls,.zip,.doc,.docx" onchange="handleProdFile(this)">
+              <div class="upload-icon">📄</div>
+              <p>Arrastra el archivo aquí o haz clic</p>
+              <div class="upload-hint">PDF, Excel, Word, ZIP — máx 50MB</div>
+            </div>
+            <div class="file-list" id="prod-file-list"></div>
+          </div>
+          <button class="btn btn-gold" onclick="saveProd()" style="width:100%;">Guardar producto →</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- STUDENTS -->
+    <div class="panel" id="panel-students">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;">
+        <div></div>
+        <button class="btn btn-gold btn-sm" onclick="openAddStudent()">+ Agregar estudiante</button>
+      </div>
+      <div class="student-grid" id="students-grid"></div>
+    </div>
+
+    <!-- ACCESS -->
+    <div class="panel" id="panel-access">
+      <div class="table-wrap">
+        <div class="table-header"><h3>Accesos al Portal</h3><button class="btn btn-gold btn-sm" onclick="openAddStudent()">+ Crear acceso</button></div>
+        <table><thead><tr><th>Estudiante</th><th>Email</th><th>Contraseña temporal</th><th>Cursos</th><th>Último acceso</th><th>Acciones</th></tr></thead>
+        <tbody id="access-table"></tbody></table>
+      </div>
+      <div style="background:var(--bg2);border:1px solid var(--b);padding:20px;margin-top:20px;">
+        <p style="font-size:13px;color:var(--muted);line-height:1.7;">
+          <strong style="color:var(--gold);">URL del portal para estudiantes:</strong><br>
+          <span style="font-family:monospace;font-size:12px;color:var(--text);">redevacademy_portal.html</span>
+          — Comparte este link con tus estudiantes junto a sus credenciales.
+        </p>
+      </div>
+    </div>
+
+    <!-- SETTINGS -->
+    <div class="panel" id="panel-settings">
+      <div style="max-width:600px;">
+        <div class="editor">
+          <h3>Configuración de plataforma</h3>
+          <div class="switch-row"><label>Portal de estudiantes activo</label><label class="switch"><input type="checkbox" checked><span class="switch-slider"></span></label></div>
+          <div class="switch-row"><label>Registro libre de estudiantes</label><label class="switch"><input type="checkbox"><span class="switch-slider"></span></label></div>
+          <div class="switch-row"><label>Mostrar progreso a estudiantes</label><label class="switch"><input type="checkbox" checked><span class="switch-slider"></span></label></div>
+          <div class="switch-row"><label>Certificados automáticos al completar</label><label class="switch"><input type="checkbox" checked><span class="switch-slider"></span></label></div>
+          <div style="margin-top:24px;" class="form-group"><label>Nombre de la plataforma</label><input type="text" value="RED ACADEMY"></div>
+          <div class="form-group"><label>Email de soporte</label><input type="text" value="soporte@redacademy.com"></div>
+          <div class="form-group"><label>URL del portal (para compartir)</label><input type="text" value="https://redacademy.com/portal"></div>
+          <button class="btn btn-gold" style="margin-top:8px;">Guardar configuración</button>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /content -->
+</main>
+</div><!-- /app -->
+
+<!-- MODAL: Add Student -->
+<div class="modal-overlay" id="modal-student">
+  <div class="modal">
+    <div class="modal-header"><h3>Agregar estudiante</h3><span class="modal-close" onclick="closeModal('modal-student')">✕</span></div>
+    <div class="modal-body">
+      <div class="form-group"><label>Nombre completo</label><input type="text" id="s-name" placeholder="María García"></div>
+      <div class="form-group"><label>Email (será su usuario)</label><input type="email" id="s-email" placeholder="maria@email.com"></div>
+      <div class="form-group"><label>Contraseña temporal</label><input type="text" id="s-pass" placeholder="Ej: Bienvenido123"></div>
+      <div class="form-group"><label>Cursos inscritos</label>
+        <label class="switch-row" style="cursor:pointer;"><span>Real Estate Developer Master (REDM)</span><input type="checkbox" id="s-redm" checked style="width:auto;"></label>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-outline" onclick="closeModal('modal-student')">Cancelar</button>
+      <button class="btn btn-gold" onclick="saveStudent()">Crear acceso →</button>
+    </div>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div class="toast" id="toast"><div class="toast-dot green" id="toast-dot"></div><span id="toast-msg">Guardado correctamente</span></div>
+
+<script>
+// ── DATA STORE ──
+const STORE_KEY = 'reda_admin_data';
+function getData(){ return JSON.parse(localStorage.getItem(STORE_KEY)||'{}'); }
+function setData(d){ localStorage.setItem(STORE_KEY, JSON.stringify(d)); }
+function initData(){
+  let d = getData();
+  if(!d.initialized){
+    d.initialized = true;
+    d.students = [
+      {id:1,name:'Mario Castillo',email:'mario@email.com',pass:'Bienvenido123',courses:['redm'],progress:65,lastAccess:'2025-05-14',enrolled:'2025-03-10'},
+      {id:2,name:'Luciana Vargas',email:'luciana@email.com',pass:'Academia2025',courses:['redm'],progress:32,lastAccess:'2025-05-16',enrolled:'2025-04-02'},
+      {id:3,name:'Roberto Ortega',email:'roberto@email.com',pass:'Desarrollador1',courses:['redm'],progress:88,lastAccess:'2025-05-17',enrolled:'2025-02-18'},
+    ];
+    d.modules = [
+      {id:1,title:'Fundamentos del Mercado',lessons:[
+        {id:11,title:'Análisis de demanda y competencia',videoUrl:'https://www.youtube.com/embed/dQw4w9WgXcQ',duration:'22:14',hasVideo:true,desc:'Aprende a leer un mercado inmobiliario local.'},
+        {id:13,title:'Laboratorio: RED Feasibility Simulator',videoUrl:'',duration:'Interactivo',hasVideo:false,isLab:true,labFile:'RED_Feasibility_Simulator.html',desc:'Laboratorio practico del Cap. 1: factibilidad inmobiliaria con el simulador RED.'},
+        {id:12,title:'Precios por m² y posicionamiento',videoUrl:'',duration:'',hasVideo:false,desc:''},
+      ]},
+      {id:2,title:'Selección y Evaluación de Terrenos',lessons:[
+        {id:21,title:'Criterios de selección de lotes',videoUrl:'',duration:'',hasVideo:false,desc:''},
+        {id:22,title:'Due diligence legal y físico',videoUrl:'',duration:'',hasVideo:false,desc:''},
+      ]},
+      {id:3,title:'Estructuración Legal y Societaria',lessons:[
+        {id:31,title:'S.A. patrimonial: por qué y cómo',videoUrl:'',duration:'',hasVideo:false,desc:''},
+        {id:32,title:'Permisos, títulos y contratos clave',videoUrl:'',duration:'',hasVideo:false,desc:''},
+      ]},
+      {id:4,title:'Finanzas del Proyecto',lessons:[
+        {id:41,title:'Modelo de flujo de caja real',videoUrl:'',duration:'',hasVideo:false,desc:''},
+        {id:42,title:'TIR, VPN y análisis de sensibilidad',videoUrl:'',duration:'',hasVideo:false,desc:''},
+      ]},
+      {id:5,title:'Diseño, Presupuesto y Construcción',lessons:[
+        {id:51,title:'Presupuesto capítulo por capítulo',videoUrl:'',duration:'',hasVideo:false,desc:''},
+        {id:52,title:'Control de avance y desvíos',videoUrl:'',duration:'',hasVideo:false,desc:''},
+      ]},
+      {id:6,title:'Financiamiento Bancario',lessons:[
+        {id:61,title:'Expediente para banco: estructura',videoUrl:'',duration:'',hasVideo:false,desc:''},
+        {id:62,title:'Líneas de crédito rotativas',videoUrl:'',duration:'',hasVideo:false,desc:''},
+      ]},
+      {id:7,title:'Estrategia Comercial y Marketing',lessons:[
+        {id:71,title:'Preventa: cómo financiar con compradores',videoUrl:'',duration:'',hasVideo:false,desc:''},
+        {id:72,title:'Meta Ads para proyectos inmobiliarios',videoUrl:'',duration:'',hasVideo:false,desc:''},
+      ]},
+      {id:8,title:'Escalamiento Operativo',lessons:[
+        {id:81,title:'Equipo y estructura para crecer',videoUrl:'',duration:'',hasVideo:false,desc:''},
+        {id:82,title:'El camino al siguiente proyecto',videoUrl:'',duration:'',hasVideo:false,desc:''},
+      ]},
+    ];
+    d.products = [
+      {id:1,name:'Análisis de Factibilidad Inmobiliaria',type:'ebook',price:47,fileName:'factibilidad.pdf',uploaded:true},
+      {id:2,name:'Presupuesto de Construcción Maestro',type:'ebook',price:39,fileName:'presupuesto.pdf',uploaded:true},
+      {id:3,name:'Financiamiento Bancario para Desarrolladores',type:'ebook',price:49,fileName:'financiamiento.pdf',uploaded:true},
+      {id:4,name:'Modelo Financiero de Proyectos STR',type:'ebook',price:55,fileName:'str.pdf',uploaded:true},
+      {id:5,name:'Pack de Contratos para Desarrolladores',type:'contratos',price:69,fileName:'contratos.zip',uploaded:true},
+    ];
+    setData(d);
+  }
+  return d;
+}
+
+// ── AUTH ──
+function doLogin(){
+  const u=document.getElementById('login-user').value;
+  const p=document.getElementById('login-pass').value;
+  if(u==='admin@redacademy.com'&&p==='admin123'){
+    document.getElementById('login-screen').style.display='none';
+    document.getElementById('app').style.display='flex';
+    renderAll();
+  } else { alert('Credenciales incorrectas'); }
+}
+function doLogout(){
+  document.getElementById('app').style.display='none';
+  document.getElementById('login-screen').style.display='flex';
+}
+
+// ── NAV ──
+const panelTitles={dashboard:'Dashboard <em>General</em>',courses:'Cursos <em>& Videos</em>',products:'Ebooks <em>& Archivos</em>',students:'Gestión de <em>Estudiantes</em>',access:'Accesos <em>al Portal</em>',settings:'<em>Configuración</em>'};
+const panelActions={dashboard:'+ Nueva lección',courses:'+ Nueva lección',products:'+ Subir archivo',students:'+ Estudiante',access:'+ Crear acceso',settings:'Guardar'};
+function showPanel(id, el){
+  document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
+  document.getElementById('panel-'+id).classList.add('active');
+  if(el) el.classList.add('active');
+  document.getElementById('topbar-title').innerHTML = panelTitles[id]||id;
+  document.getElementById('topbar-action').textContent = panelActions[id]||'Nuevo';
+  if(id==='courses') renderModuleTree();
+  if(id==='products') renderProducts();
+  if(id==='students') renderStudents();
+  if(id==='access') renderAccess();
+}
+function topbarAction(){
+  const active = document.querySelector('.panel.active').id.replace('panel-','');
+  if(active==='students'||active==='access') openAddStudent();
+  else if(active==='courses') addModule();
+  else if(active==='products') document.getElementById('prod-file').click();
+}
+
+// ── RENDER ──
+function renderAll(){
+  const d = initData();
+  document.getElementById('stat-students').textContent = d.students.length;
+  document.getElementById('stat-videos').textContent = d.modules.reduce((a,m)=>a+m.lessons.filter(l=>l.hasVideo).length,0);
+  renderDashboardStudents(d);
+  renderModuleTree();
+  renderProducts();
+  renderStudents();
+  renderAccess();
+}
+
+function renderDashboardStudents(d){
+  const tb = document.getElementById('dashboard-students');
+  tb.innerHTML = d.students.map(s=>`
+    <tr>
+      <td><strong>${s.name}</strong></td>
+      <td style="color:var(--muted)">${s.email}</td>
+      <td style="color:var(--muted)">${s.enrolled}</td>
+      <td>
+        <div style="display:flex;align-items:center;gap:8px;">
+          <div style="flex:1;height:3px;background:var(--dim);"><div style="width:${s.progress}%;height:100%;background:var(--gold);"></div></div>
+          <span style="font-size:11px;color:var(--muted)">${s.progress}%</span>
+        </div>
+      </td>
+      <td><span class="tag ${s.progress>75?'tag-green':'tag-gold'}">${s.progress>75?'Avanzado':'Activo'}</span></td>
+    </tr>`).join('');
+}
+
+let currentLesson = null;
+function renderModuleTree(){
+  const d = getData();
+  const tree = document.getElementById('module-tree');
+  tree.innerHTML = d.modules.map(m=>`
+    <div class="module-item" onclick="toggleModule(${m.id})">
+      <div class="mod-num">Módulo ${String(m.id).padStart(2,'0')}</div>
+      <div class="mod-title">${m.title}</div>
+    </div>
+    <div id="lessons-${m.id}" style="display:none;">
+      ${m.lessons.map(l=>`
+        <div class="lesson-item" onclick="editLesson(${m.id},${l.id})">
+          ${l.isLab ? '<span style="font-size:12px;color:#C9A96E;">⚗</span>' : '<div class="lesson-dot '+(l.hasVideo?'has-video':'')+'"></div>'}
+          <span class="lesson-title">${l.title}</span>
+          <span class="lesson-dur">${l.duration||'—'}</span>
+        </div>`).join('')}
+      <div class="lesson-item" onclick="addLesson(${m.id})" style="opacity:.5;">
+        <span style="font-size:12px;color:var(--gold);">+ Lección</span>
+      </div>
+    </div>`).join('');
+}
+
+function toggleModule(id){
+  const el = document.getElementById('lessons-'+id);
+  el.style.display = el.style.display==='none'?'block':'none';
+}
+
+function editLesson(modId, lesId){
+  const d = getData();
+  const mod = d.modules.find(m=>m.id===modId);
+  const les = mod.lessons.find(l=>l.id===lesId);
+  currentLesson = {modId, lesId};
+  const editor = document.getElementById('lesson-editor');
+  editor.innerHTML = `
+    <h3>Editar lección</h3>
+    <div class="form-group"><label>Título de la lección</label><input type="text" id="les-title" value="${les.title}"></div>
+    <div class="form-group"><label>Descripción / Contenido</label><textarea id="les-desc" rows="3" placeholder="Descripción de esta lección...">${les.desc||''}</textarea></div>
+    <div class="form-group"><label>Duración (ej: 18:45)</label><input type="text" id="les-dur" value="${les.duration||''}" placeholder="18:45"></div>
+
+    <div class="form-group">
+      <label>Video — URL de YouTube / Vimeo</label>
+      <input type="text" id="les-video-url" value="${les.videoUrl||''}" placeholder="https://www.youtube.com/watch?v=..." oninput="previewVideo()">
+      <div class="video-preview" id="video-preview-box" style="margin-top:12px;">
+        ${les.videoUrl?`<iframe src="${les.videoUrl}" allowfullscreen></iframe>`:'<div class="no-video"><div style="font-size:32px;margin-bottom:8px;">▶</div><p>Pega una URL de YouTube o Vimeo</p></div>'}
+      </div>
+    </div>
+
+    </div><!-- /video-fields -->
+    <div id="video-fields-extra" style="display:${les.isLab?'none':'block'};">
+    <div class="form-group">
+      <label>O sube el video directamente</label>
+      <div class="upload-zone">
+        <input type="file" accept="video/*" onchange="handleVideoFile(this)">
+        <div class="upload-icon">🎬</div>
+        <p>Arrastra el video aquí (MP4, MOV, WebM)</p>
+        <div class="upload-hint">Para producción usa Vimeo Pro o AWS S3 para videos de gran tamaño</div>
+      </div>
+      <div id="video-upload-progress" style="display:none;margin-top:8px;">
+        <div style="font-size:12px;color:var(--muted);margin-bottom:4px;">Cargando video...</div>
+        <div class="progress-bar"><div class="progress-fill" id="vprog" style="width:0%"></div></div>
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label>Material descargable (PDF, Excel)</label>
+      <div class="upload-zone">
+        <input type="file" multiple accept=".pdf,.xlsx,.docx,.zip" onchange="handleMaterial(this)">
+        <div class="upload-icon">📎</div>
+        <p>Adjunta materiales de esta lección</p>
+      </div>
+      <div class="file-list" id="mat-list">
+        ${(les.materials||[]).map(m=>`<div class="file-item"><span class="file-icon">📄</span><div class="file-info"><div class="file-name">${m.name}</div></div><span class="file-remove" onclick="removeMat('${m.name}')">✕</span></div>`).join('')}
+      </div>
+    </div>
+
+    </div><!-- /video-fields-extra -->
+    <div style="display:flex;gap:12px;margin-top:8px;">
+      <button class="btn btn-gold" onclick="saveLesson()" style="flex:1">Guardar lección →</button>
+      <button class="btn btn-outline" onclick="deleteLesson()">Eliminar</button>
+    </div>`;
+}
+
+
+function toggleLessonType(){
+  const type = document.getElementById('les-type')?.value;
+  const labFields = document.getElementById('lab-fields');
+  const videoFields = document.getElementById('video-fields');
+  const videoFieldsExtra = document.getElementById('video-fields-extra');
+  if(labFields) labFields.style.display = type==='lab'?'block':'none';
+  if(videoFields) videoFields.style.display = type==='lab'?'none':'block';
+  if(videoFieldsExtra) videoFieldsExtra.style.display = type==='lab'?'none':'block';
+}
+function previewVideo(){
+  const url = document.getElementById('les-video-url').value;
+  const box = document.getElementById('video-preview-box');
+  if(!url){box.innerHTML='<div class="no-video"><div style="font-size:32px">▶</div><p>Pega una URL de YouTube o Vimeo</p></div>';return;}
+  let embed = url;
+  if(url.includes('youtube.com/watch?v=')) embed='https://www.youtube.com/embed/'+url.split('v=')[1].split('&')[0];
+  else if(url.includes('youtu.be/')) embed='https://www.youtube.com/embed/'+url.split('youtu.be/')[1];
+  else if(url.includes('vimeo.com/')) embed='https://player.vimeo.com/video/'+url.split('vimeo.com/')[1];
+  box.innerHTML=`<iframe src="${embed}" allowfullscreen></iframe>`;
+}
+
+function handleVideoFile(input){
+  const file = input.files[0];
+  if(!file) return;
+  const prog = document.getElementById('video-upload-progress');
+  prog.style.display='block';
+  let pct=0;
+  const iv=setInterval(()=>{
+    pct+=Math.random()*15;
+    if(pct>=100){pct=100;clearInterval(iv);
+      document.getElementById('les-video-url').value=URL.createObjectURL(file);
+      document.getElementById('video-preview-box').innerHTML=`<video controls src="${URL.createObjectURL(file)}"></video>`;
+      showToast('Video cargado — usar Vimeo Pro para producción','gold');
+    }
+    document.getElementById('vprog').style.width=Math.min(pct,100)+'%';
+  },120);
+}
+
+function handleMaterial(input){
+  const list=document.getElementById('mat-list');
+  Array.from(input.files).forEach(f=>{
+    const div=document.createElement('div');div.className='file-item';
+    div.innerHTML=`<span class="file-icon">📄</span><div class="file-info"><div class="file-name">${f.name}</div><div class="file-size">${(f.size/1024/1024).toFixed(2)} MB</div></div><span class="file-remove" onclick="this.parentElement.remove()">✕</span>`;
+    list.appendChild(div);
+  });
+}
+
+function saveLesson(){
+  if(!currentLesson) return;
+  const d=getData();
+  const mod=d.modules.find(m=>m.id===currentLesson.modId);
+  const les=mod.lessons.find(l=>l.id===currentLesson.lesId);
+  let url=document.getElementById('les-video-url').value;
+  if(url.includes('youtube.com/watch?v=')) url='https://www.youtube.com/embed/'+url.split('v=')[1].split('&')[0];
+  else if(url.includes('youtu.be/')) url='https://www.youtube.com/embed/'+url.split('youtu.be/')[1];
+  else if(url.includes('vimeo.com/')) url='https://player.vimeo.com/video/'+url.split('vimeo.com/')[1];
+  les.title=document.getElementById('les-title').value;
+  les.desc=document.getElementById('les-desc').value;
+  les.duration=document.getElementById('les-dur').value;
+  const lesType = document.getElementById('les-type')?.value||'video';
+  les.isLab = lesType==='lab';
+  les.labFile = les.isLab ? (document.getElementById('les-lab-file')?.value||'RED_Feasibility_Simulator.html') : '';
+  les.videoUrl = les.isLab ? '' : url;
+  les.hasVideo = !les.isLab && !!url;
+  setData(d);
+  renderModuleTree();
+  document.getElementById('stat-videos').textContent=d.modules.reduce((a,m)=>a+m.lessons.filter(l=>l.hasVideo).length,0);
+  showToast('Lección guardada correctamente');
+}
+
+function addModule(){
+  const d=getData();
+  const id=Date.now();
+  d.modules.push({id,title:'Nuevo módulo',lessons:[{id:id+1,title:'Nueva lección',videoUrl:'',duration:'',hasVideo:false,desc:''}]});
+  setData(d);renderModuleTree();showToast('Módulo creado');
+}
+
+function addLesson(modId){
+  const d=getData();
+  const mod=d.modules.find(m=>m.id===modId);
+  mod.lessons.push({id:Date.now(),title:'Nueva lección',videoUrl:'',duration:'',hasVideo:false,desc:''});
+  setData(d);renderModuleTree();showToast('Lección agregada');
+}
+
+function deleteLesson(){
+  if(!currentLesson||!confirm('¿Eliminar esta lección?')) return;
+  const d=getData();
+  const mod=d.modules.find(m=>m.id===currentLesson.modId);
+  mod.lessons=mod.lessons.filter(l=>l.id!==currentLesson.lesId);
+  setData(d);currentLesson=null;
+  document.getElementById('lesson-editor').innerHTML='<h3>Selecciona una lección</h3>';
+  renderModuleTree();showToast('Lección eliminada','gold');
+}
+
+// PRODUCTS
+let prodFile=null;
+function handleProdFile(input){
+  prodFile=input.files[0];
+  if(!prodFile)return;
+  const list=document.getElementById('prod-file-list');
+  list.innerHTML=`<div class="file-item"><span class="file-icon">📄</span><div class="file-info"><div class="file-name">${prodFile.name}</div><div class="file-size">${(prodFile.size/1024/1024).toFixed(2)} MB</div></div><span class="file-remove" onclick="prodFile=null;document.getElementById('prod-file-list').innerHTML=''">✕</span></div>`;
+}
+function saveProd(){
+  const n=document.getElementById('prod-name').value;
+  if(!n){alert('Ingresa el nombre del producto');return;}
+  const d=getData();
+  d.products.push({id:Date.now(),name:n,type:document.getElementById('prod-type').value,price:+document.getElementById('prod-price').value||0,fileName:prodFile?prodFile.name:'sin archivo',uploaded:!!prodFile});
+  setData(d);renderProducts();
+  document.getElementById('prod-name').value='';document.getElementById('prod-price').value='';
+  prodFile=null;document.getElementById('prod-file-list').innerHTML='';
+  showToast('Producto guardado');
+}
+function renderProducts(){
+  const d=getData();
+  const tb=document.getElementById('products-table');
+  tb.innerHTML=d.products.map(p=>`<tr>
+    <td><strong>${p.name}</strong></td>
+    <td><span class="tag tag-gold">${p.type}</span></td>
+    <td style="color:var(--gold)">$${p.price}</td>
+    <td style="font-size:12px;color:var(--muted)">${p.fileName} ${p.uploaded?'<span class="tag tag-green">✓</span>':''}</td>
+    <td><button class="btn btn-outline btn-sm" onclick="deleteProd(${p.id})">Eliminar</button></td>
+  </tr>`).join('');
+}
+function deleteProd(id){
+  if(!confirm('¿Eliminar este producto?'))return;
+  const d=getData();d.products=d.products.filter(p=>p.id!==id);setData(d);renderProducts();showToast('Eliminado','gold');
+}
+
+// STUDENTS
+function openAddStudent(){ document.getElementById('modal-student').classList.add('open'); }
+function closeModal(id){ document.getElementById(id).classList.remove('open'); }
+function saveStudent(){
+  const n=document.getElementById('s-name').value;
+  const e=document.getElementById('s-email').value;
+  const p=document.getElementById('s-pass').value;
+  if(!n||!e||!p){alert('Completa todos los campos');return;}
+  const d=getData();
+  d.students.push({id:Date.now(),name:n,email:e,pass:p,courses:document.getElementById('s-redm').checked?['redm']:[],progress:0,lastAccess:'—',enrolled:new Date().toISOString().split('T')[0]});
+  setData(d);closeModal('modal-student');
+  renderStudents();renderAccess();renderDashboardStudents(d);
+  document.getElementById('stat-students').textContent=d.students.length;
+  showToast('Estudiante creado — credenciales listas');
+}
+function renderStudents(){
+  const d=getData();
+  const g=document.getElementById('students-grid');
+  g.innerHTML=d.students.map(s=>`
+    <div class="student-card">
+      <div class="student-avatar">${s.name.split(' ').map(w=>w[0]).join('').slice(0,2)}</div>
+      <div class="student-name">${s.name}</div>
+      <div class="student-email">${s.email}</div>
+      <span class="tag tag-gold">${s.courses.includes('redm')?'REDM':''}</span>
+      <div class="student-progress">
+        <div class="progress-label"><span>Progreso</span><span>${s.progress}%</span></div>
+        <div class="progress-bar"><div class="progress-fill" style="width:${s.progress}%"></div></div>
+      </div>
+      <div style="margin-top:12px;display:flex;gap:8px;">
+        <button class="btn btn-outline btn-sm" style="flex:1" onclick="deleteStudent(${s.id})">Eliminar</button>
+      </div>
+    </div>`).join('');
+}
+function deleteStudent(id){
+  if(!confirm('¿Eliminar estudiante?'))return;
+  const d=getData();d.students=d.students.filter(s=>s.id!==id);setData(d);renderStudents();renderAccess();
+}
+function renderAccess(){
+  const d=getData();
+  const tb=document.getElementById('access-table');
+  tb.innerHTML=d.students.map(s=>`<tr>
+    <td><strong>${s.name}</strong></td>
+    <td style="color:var(--muted)">${s.email}</td>
+    <td><span style="font-family:monospace;font-size:12px;background:var(--bg3);padding:3px 8px;">${s.pass}</span></td>
+    <td><span class="tag tag-gold">${s.courses.join(', ')||'—'}</span></td>
+    <td style="color:var(--muted)">${s.lastAccess}</td>
+    <td><button class="btn btn-outline btn-sm" onclick="copyAccess('${s.email}','${s.pass}')">Copiar</button></td>
+  </tr>`).join('');
+}
+function copyAccess(email,pass){
+  navigator.clipboard.writeText(`Portal RED ACADEMY:\nEmail: ${email}\nContraseña: ${pass}\nURL: redevacademy_portal.html`);
+  showToast('Credenciales copiadas al portapapeles');
+}
+
+// TOAST
+function showToast(msg,type='green'){
+  const t=document.getElementById('toast');
+  document.getElementById('toast-msg').textContent=msg;
+  document.getElementById('toast-dot').className=`toast-dot ${type}`;
+  t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'),3000);
+}
+
+// INIT
+document.addEventListener('keydown',e=>{ if(e.key==='Enter'&&document.getElementById('login-screen').style.display!=='none') doLogin(); });
+</script>
+</body>
+</html>

@@ -1,0 +1,716 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Portal — RED ACADEMY</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Outfit:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+:root{
+  --gold:#C9A96E;--gold-l:#E8D4A8;--gold-d:#9B7A45;--gold-p:rgba(201,169,110,0.1);
+  --bg:#080808;--bg2:#0F0F0F;--bg3:#161616;--bg4:#1E1E1E;--bg5:#252525;
+  --text:#F0EBE0;--muted:#7A7570;--faint:#2A2820;
+  --b:rgba(201,169,110,0.2);--dim:rgba(201,169,110,0.07);
+  --green:#4CAF7D;--green-p:rgba(76,175,125,0.1);
+  --sidebar-w:300px;
+}
+html,body{height:100%;overflow:hidden;}
+body{background:var(--bg);color:var(--text);font-family:'Outfit',sans-serif;font-weight:300;}
+
+/* ── LOGIN ── */
+#login-screen{position:fixed;inset:0;background:var(--bg);display:flex;align-items:center;justify-content:center;z-index:1000;flex-direction:column;}
+.login-visual{text-align:center;margin-bottom:40px;}
+.login-visual .logo{font-family:'Cormorant Garamond',serif;font-size:28px;font-weight:600;letter-spacing:.15em;color:var(--gold);}
+.login-visual .logo span{color:var(--text);font-weight:300;}
+.login-visual .tagline{font-size:11px;letter-spacing:.2em;text-transform:uppercase;color:var(--muted);margin-top:6px;}
+.login-box{width:380px;border:1px solid var(--b);padding:40px;background:var(--bg2);}
+.login-box h2{font-family:'Cormorant Garamond',serif;font-size:26px;font-weight:300;margin-bottom:24px;}
+.field{margin-bottom:16px;}
+.field label{display:block;font-size:10px;letter-spacing:.18em;text-transform:uppercase;color:var(--muted);margin-bottom:7px;}
+.field input{width:100%;background:var(--bg3);border:1px solid var(--dim);color:var(--text);padding:12px 16px;font-family:'Outfit',sans-serif;font-size:14px;outline:none;transition:border-color .2s;}
+.field input:focus{border-color:var(--gold);}
+.btn-login{width:100%;background:var(--gold);color:#080808;padding:14px;font-family:'Outfit',sans-serif;font-size:12px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;border:none;cursor:pointer;transition:background .2s;margin-top:8px;}
+.btn-login:hover{background:var(--gold-l);}
+.login-err{font-size:12px;color:#E05555;text-align:center;margin-top:12px;display:none;}
+.login-demo{font-size:12px;color:var(--muted);text-align:center;margin-top:14px;}
+
+/* ── APP SHELL ── */
+#app{display:none;height:100vh;flex-direction:column;}
+#app.visible{display:flex;}
+
+/* TOP NAV */
+.top-nav{height:60px;background:var(--bg2);border-bottom:1px solid var(--dim);display:flex;align-items:center;justify-content:space-between;padding:0 24px;flex-shrink:0;z-index:100;}
+.top-nav .logo{font-family:'Cormorant Garamond',serif;font-size:18px;font-weight:600;letter-spacing:.12em;color:var(--gold);cursor:pointer;}
+.top-nav .logo span{color:var(--text);font-weight:300;}
+.top-nav-right{display:flex;align-items:center;gap:16px;}
+.user-pill{display:flex;align-items:center;gap:10px;cursor:pointer;}
+.user-avatar{width:34px;height:34px;border-radius:50%;background:var(--gold-p);border:1px solid var(--b);display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:500;color:var(--gold);}
+.user-name{font-size:13px;}
+.logout{font-size:12px;color:var(--muted);cursor:pointer;letter-spacing:.08em;text-transform:uppercase;transition:color .2s;}
+.logout:hover{color:var(--gold);}
+.nav-tab{padding:6px 16px;font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);cursor:pointer;border-bottom:2px solid transparent;transition:all .2s;}
+.nav-tab.active,.nav-tab:hover{color:var(--gold);}
+.nav-tab.active{border-bottom-color:var(--gold);}
+
+/* ── PAGES ── */
+.page{display:none;flex:1;overflow:hidden;}
+.page.active{display:flex;flex-direction:column;}
+
+/* DASHBOARD */
+.dash-scroll{flex:1;overflow-y:auto;padding:40px 48px;}
+.dash-welcome{margin-bottom:40px;}
+.dash-welcome h1{font-family:'Cormorant Garamond',serif;font-size:clamp(32px,4vw,48px);font-weight:300;line-height:1.1;}
+.dash-welcome h1 em{font-style:italic;color:var(--gold);}
+.dash-welcome p{font-size:15px;color:var(--muted);margin-top:8px;}
+.course-cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:24px;}
+.course-card{background:var(--bg2);border:1px solid var(--dim);cursor:pointer;transition:all .25s;overflow:hidden;}
+.course-card:hover{border-color:var(--gold);transform:translateY(-4px);box-shadow:0 16px 48px rgba(0,0,0,0.5);}
+.course-thumb{height:160px;background:linear-gradient(135deg,#0A0800,#1A1508);position:relative;display:flex;align-items:center;justify-content:center;overflow:hidden;}
+.course-thumb-bg{position:absolute;inset:0;background-image:radial-gradient(circle,rgba(201,169,110,0.12) 1px,transparent 1px);background-size:24px 24px;opacity:.5;}
+.course-thumb-title{font-family:'Cormorant Garamond',serif;font-size:20px;font-weight:600;color:var(--gold-l);text-align:center;padding:20px;position:relative;}
+.course-badge{position:absolute;top:14px;right:14px;background:var(--gold);color:#080808;font-size:9px;font-weight:700;letter-spacing:.15em;text-transform:uppercase;padding:4px 10px;}
+.course-body{padding:20px;}
+.course-title{font-size:17px;font-weight:500;margin-bottom:6px;}
+.course-meta{font-size:12px;color:var(--muted);margin-bottom:16px;}
+.prog-label{display:flex;justify-content:space-between;font-size:11px;color:var(--muted);margin-bottom:5px;}
+.prog-bar{height:3px;background:var(--faint);}
+.prog-fill{height:100%;background:var(--gold);transition:width .5s;}
+.resume-btn{display:flex;align-items:center;justify-content:space-between;margin-top:16px;padding-top:16px;border-top:1px solid var(--dim);}
+.resume-btn span{font-size:12px;color:var(--muted);}
+.resume-btn a{font-size:12px;letter-spacing:.1em;text-transform:uppercase;color:var(--gold);}
+
+/* RESOURCES */
+.resources-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:20px;}
+.resource-card{background:var(--bg2);border:1px solid var(--dim);padding:20px;display:flex;flex-direction:column;gap:12px;transition:border-color .2s;}
+.resource-card:hover{border-color:var(--gold);}
+.resource-icon{font-size:32px;}
+.resource-title{font-size:15px;font-weight:500;}
+.resource-meta{font-size:12px;color:var(--muted);}
+.dl-btn{display:inline-flex;align-items:center;gap:6px;padding:9px 18px;background:var(--gold-p);border:1px solid var(--b);color:var(--gold);font-size:11px;letter-spacing:.1em;text-transform:uppercase;cursor:pointer;transition:all .2s;margin-top:auto;}
+.dl-btn:hover{background:var(--gold);color:#080808;}
+
+/* ── COURSE PLAYER ── */
+#page-player{display:none;height:calc(100vh - 60px);flex-direction:row;}
+#page-player.active{display:flex;}
+
+/* Curriculum Sidebar */
+.curriculum{width:var(--sidebar-w);background:var(--bg2);border-right:1px solid var(--dim);display:flex;flex-direction:column;flex-shrink:0;}
+.curr-header{padding:18px 20px;border-bottom:1px solid var(--dim);}
+.curr-title{font-family:'Cormorant Garamond',serif;font-size:17px;font-weight:400;}
+.curr-prog{margin-top:10px;}
+.curr-prog .label{font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin-bottom:5px;}
+.curr-prog .bar{height:3px;background:var(--faint);}
+.curr-prog .fill{height:100%;background:var(--gold);transition:width .4s;}
+.curr-prog .pct{font-size:11px;color:var(--gold);margin-top:4px;}
+.curr-scroll{flex:1;overflow-y:auto;}
+.curr-module{border-bottom:1px solid var(--dim);}
+.curr-mod-header{display:flex;align-items:center;justify-content:space-between;padding:13px 18px;cursor:pointer;transition:background .15s;}
+.curr-mod-header:hover{background:rgba(255,255,255,.02);}
+.curr-mod-num{font-size:9px;letter-spacing:.15em;text-transform:uppercase;color:var(--muted);}
+.curr-mod-title{font-size:12px;font-weight:500;margin-top:2px;}
+.curr-mod-toggle{font-size:11px;color:var(--muted);transition:transform .2s;}
+.curr-mod-toggle.open{transform:rotate(90deg);}
+.curr-lessons{display:none;}
+.curr-lessons.open{display:block;}
+.curr-lesson{display:flex;align-items:center;gap:10px;padding:10px 18px 10px 28px;cursor:pointer;transition:background .15s;border-left:2px solid transparent;}
+.curr-lesson:hover{background:rgba(255,255,255,.02);}
+.curr-lesson.active{background:var(--gold-p);border-left-color:var(--gold);}
+.curr-lesson.completed .lesson-check{background:var(--green);border-color:var(--green);}
+.lab-dot{width:16px;height:16px;border-radius:3px;background:#C9A96E;display:flex;align-items:center;justify-content:center;font-size:9px;flex-shrink:0;}
+.lesson-check{width:16px;height:16px;border-radius:50%;border:1.5px solid var(--muted);display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:9px;color:#080808;}
+.lesson-info{flex:1;min-width:0;}
+.lesson-name{font-size:12px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.lesson-name.no-video{color:var(--muted);}
+.lesson-dur{font-size:10px;color:var(--faint);margin-top:1px;}
+
+/* Player Main Area */
+.player-main{flex:1;display:flex;flex-direction:column;overflow:hidden;background:var(--bg);}
+.video-area{background:#000;position:relative;flex-shrink:0;}
+.video-area iframe,.video-area video{width:100%;display:block;}
+.no-video-state{display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:320px;gap:12px;color:var(--muted);}
+.no-video-state .play-icon{font-size:56px;opacity:.2;}
+.no-video-state p{font-size:14px;text-align:center;}
+.player-scroll{flex:1;overflow-y:auto;}
+.lesson-detail{padding:28px 36px;max-width:800px;}
+.lesson-header{display:flex;align-items:flex-start;justify-content:space-between;gap:20px;margin-bottom:20px;}
+.lesson-header h2{font-family:'Cormorant Garamond',serif;font-size:28px;font-weight:300;line-height:1.2;}
+.complete-btn{flex-shrink:0;padding:10px 22px;background:var(--green-p);border:1px solid rgba(76,175,125,.35);color:var(--green);font-size:11px;font-weight:500;letter-spacing:.1em;text-transform:uppercase;cursor:pointer;font-family:'Outfit',sans-serif;transition:all .2s;white-space:nowrap;}
+.complete-btn:hover,.complete-btn.done{background:var(--green);color:#080808;}
+.lesson-desc{font-size:15px;color:var(--muted);line-height:1.8;margin-bottom:28px;}
+.lesson-mats{border-top:1px solid var(--dim);padding-top:20px;}
+.lesson-mats h4{font-size:10px;letter-spacing:.2em;text-transform:uppercase;color:var(--muted);margin-bottom:14px;}
+.mat-item{display:flex;align-items:center;gap:12px;padding:11px 14px;background:var(--bg2);border:1px solid var(--dim);margin-bottom:8px;cursor:pointer;transition:border-color .2s;}
+.mat-item:hover{border-color:var(--gold);}
+.mat-icon{font-size:20px;}
+.mat-name{font-size:13px;flex:1;}
+.mat-dl{font-size:11px;color:var(--gold);letter-spacing:.08em;text-transform:uppercase;}
+
+/* Nav between lessons */
+.lesson-nav{display:flex;justify-content:space-between;padding:16px 36px;border-top:1px solid var(--dim);background:var(--bg2);}
+.nav-lesson-btn{display:flex;align-items:center;gap:8px;cursor:pointer;padding:10px 18px;border:1px solid var(--dim);font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);transition:all .2s;}
+.nav-lesson-btn:hover{border-color:var(--gold);color:var(--gold);}
+.nav-lesson-btn.next-btn{background:var(--gold);color:#080808;border-color:var(--gold);}
+.nav-lesson-btn.next-btn:hover{background:var(--gold-l);}
+
+/* NOTES */
+.notes-area{padding:0 36px 28px;}
+.notes-area h4{font-size:10px;letter-spacing:.2em;text-transform:uppercase;color:var(--muted);margin-bottom:12px;}
+.notes-ta{width:100%;background:var(--bg2);border:1px solid var(--dim);color:var(--text);padding:14px;font-family:'Outfit',sans-serif;font-size:13px;resize:vertical;min-height:80px;outline:none;}
+.notes-ta:focus{border-color:var(--gold);}
+.notes-save{margin-top:8px;padding:8px 20px;background:transparent;border:1px solid var(--dim);color:var(--muted);font-family:'Outfit',sans-serif;font-size:11px;letter-spacing:.1em;text-transform:uppercase;cursor:pointer;transition:all .2s;}
+.notes-save:hover{border-color:var(--gold);color:var(--gold);}
+
+/* CERT */
+.cert-wrap{display:flex;align-items:center;justify-content:center;flex:1;padding:40px;}
+.cert-box{max-width:700px;width:100%;border:2px solid var(--gold);padding:60px;text-align:center;background:linear-gradient(135deg,#0A0800,#141008);position:relative;}
+.cert-box::before{content:'';position:absolute;inset:8px;border:1px solid rgba(201,169,110,.2);}
+.cert-logo{font-family:'Cormorant Garamond',serif;font-size:16px;color:var(--gold);letter-spacing:.2em;margin-bottom:20px;}
+.cert-title{font-family:'Cormorant Garamond',serif;font-size:14px;letter-spacing:.25em;color:var(--muted);text-transform:uppercase;margin-bottom:8px;}
+.cert-name{font-family:'Cormorant Garamond',serif;font-size:48px;font-weight:300;color:var(--gold-l);margin-bottom:8px;}
+.cert-course{font-family:'Cormorant Garamond',serif;font-size:22px;font-style:italic;color:var(--text);margin-bottom:32px;}
+.cert-line{width:200px;height:1px;background:var(--gold);margin:0 auto 24px;}
+.cert-sign{font-family:'Cormorant Garamond',serif;font-size:18px;font-style:italic;color:var(--muted);}
+.cert-print{margin-top:24px;padding:12px 32px;background:var(--gold);color:#080808;border:none;font-family:'Outfit',sans-serif;font-size:12px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;cursor:pointer;}
+
+/* TOAST */
+.toast{position:fixed;bottom:20px;right:20px;background:var(--bg3);border:1px solid var(--b);padding:12px 18px;font-size:13px;display:flex;align-items:center;gap:8px;z-index:999;transform:translateY(80px);opacity:0;transition:all .3s;}
+.toast.show{transform:translateY(0);opacity:1;}
+.tdot{width:7px;height:7px;border-radius:50%;background:var(--green);}
+</style>
+</head>
+<body>
+
+<!-- LOGIN -->
+<div id="login-screen">
+  <div class="login-visual">
+    <div class="logo">RED <span>ACADEMY</span></div>
+    <div class="tagline">Real Estate Developer Academy</div>
+  </div>
+  <div class="login-box">
+    <h2>Accede a tu curso</h2>
+    <div class="field"><label>Email</label><input type="email" id="l-email" placeholder="tu@email.com" value="mario@email.com"></div>
+    <div class="field"><label>Contraseña</label><input type="password" id="l-pass" placeholder="••••••••" value="Bienvenido123"></div>
+    <button class="btn-login" onclick="doLogin()">Ingresar al portal →</button>
+    <div class="login-err" id="login-err">Email o contraseña incorrectos</div>
+    <div class="login-demo">Demo: <strong>mario@email.com</strong> / <strong>Bienvenido123</strong></div>
+  </div>
+</div>
+
+<!-- APP -->
+<div id="app">
+  <!-- TOP NAV -->
+  <div class="top-nav">
+    <div style="display:flex;align-items:center;gap:32px;">
+      <div class="logo" onclick="goPage('dashboard')">RED <span>ACADEMY</span></div>
+      <div style="display:flex;gap:4px;">
+        <div class="nav-tab active" id="tab-dashboard" onclick="goPage('dashboard')">Mis cursos</div>
+        <div class="nav-tab" id="tab-labs" onclick="goPage('labs')">⚗ Laboratorios</div>
+        <div class="nav-tab" id="tab-resources" onclick="goPage('resources')">Recursos</div>
+        <div class="nav-tab" id="tab-cert" onclick="goPage('certificate')">Certificado</div>
+      </div>
+    </div>
+    <div class="top-nav-right">
+      <div class="user-pill">
+        <div class="user-avatar" id="user-av"></div>
+        <div class="user-name" id="user-nm"></div>
+      </div>
+      <div class="logout" onclick="doLogout()">Salir</div>
+    </div>
+  </div>
+
+  <!-- DASHBOARD PAGE -->
+  <div class="page active" id="page-dashboard">
+    <div class="dash-scroll">
+      <div class="dash-welcome">
+        <h1>Bienvenido, <em id="welcome-name">Estudiante</em></h1>
+        <p>Continúa donde lo dejaste. Tu progreso se guarda automáticamente.</p>
+      </div>
+      <div class="course-cards" id="course-cards"></div>
+    </div>
+  </div>
+
+  <!-- RESOURCES PAGE -->
+  <div class="page" id="page-resources">
+    <div class="dash-scroll">
+      <div class="dash-welcome">
+        <h1>Tus <em>Recursos</em></h1>
+        <p>Materiales descargables incluidos en tu programa.</p>
+      </div>
+      <div class="resources-grid" id="res-grid"></div>
+    </div>
+  </div>
+
+
+  <!-- LABS PAGE -->
+  <div class="page" id="page-labs">
+    <div class="dash-scroll">
+      <div class="dash-welcome">
+        <h1>&#9883; <em>Laboratorios</em> Interactivos</h1>
+        <p>Herramientas practicas para aplicar lo que aprendes. Piensa como un desarrollador inmobiliario profesional.</p>
+      </div>
+      <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:20px;margin-bottom:40px;">
+
+        <!-- SIMULATOR CARD -->
+        <div style="background:var(--bg2);border:1px solid rgba(201,169,110,0.3);overflow:hidden;cursor:pointer;transition:transform .2s,box-shadow .2s;"
+             onmouseover="this.style.transform='translateY(-4px)';this.style.boxShadow='0 16px 48px rgba(0,0,0,.6)'"
+             onmouseout="this.style.transform='';this.style.boxShadow=''"
+             onclick="openLab('RED Feasibility Simulator','RED_Feasibility_Simulator.html')">
+          <div style="height:130px;background:linear-gradient(135deg,#0A0800,#1A1508);display:flex;align-items:center;justify-content:center;position:relative;overflow:hidden;">
+            <div style="position:absolute;inset:0;background-image:radial-gradient(circle,rgba(201,169,110,0.15) 1px,transparent 1px);background-size:20px 20px;opacity:.6;"></div>
+            <div style="font-size:44px;position:relative;">&#9883;</div>
+            <div style="position:absolute;top:10px;right:10px;background:#C9A96E;color:#080808;font-size:9px;font-weight:700;letter-spacing:.15em;padding:4px 10px;">ACTIVO</div>
+          </div>
+          <div style="padding:20px;">
+            <div style="font-size:9px;letter-spacing:.2em;text-transform:uppercase;color:#C9A96E;margin-bottom:6px;">Capitulo 1 &middot; Simulador premium</div>
+            <div style="font-size:18px;font-weight:500;margin-bottom:8px;">RED Feasibility Simulator</div>
+            <div style="font-size:13px;color:#7A7570;line-height:1.6;margin-bottom:14px;">Analiza la factibilidad de cualquier proyecto inmobiliario en tiempo real. Terreno, costos, ingresos y recomendacion final automatica.</div>
+            <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:14px;">
+              <span style="background:rgba(201,169,110,0.1);color:#C9A96E;font-size:10px;padding:3px 9px;border:1px solid rgba(201,169,110,0.2);">ROI en vivo</span>
+              <span style="background:rgba(201,169,110,0.1);color:#C9A96E;font-size:10px;padding:3px 9px;border:1px solid rgba(201,169,110,0.2);">3 escenarios</span>
+              <span style="background:rgba(201,169,110,0.1);color:#C9A96E;font-size:10px;padding:3px 9px;border:1px solid rgba(201,169,110,0.2);">Sensibilidad</span>
+              <span style="background:rgba(201,169,110,0.1);color:#C9A96E;font-size:10px;padding:3px 9px;border:1px solid rgba(201,169,110,0.2);">Insights</span>
+            </div>
+            <div style="display:flex;align-items:center;justify-content:space-between;padding-top:14px;border-top:1px solid rgba(201,169,110,0.07);">
+              <span style="font-size:12px;color:#7A7570;">4 secciones &middot; Calculo instantaneo</span>
+              <span style="font-size:12px;color:#C9A96E;letter-spacing:.08em;text-transform:uppercase;">Abrir &rarr;</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- LAB 2 COMING SOON -->
+        <div style="background:var(--bg2);border:1px solid var(--dim);overflow:hidden;opacity:.5;">
+          <div style="height:130px;background:linear-gradient(135deg,#080F14,#0F1A22);display:flex;align-items:center;justify-content:center;">
+            <div style="font-size:44px;">&#128202;</div>
+          </div>
+          <div style="padding:20px;">
+            <div style="font-size:9px;letter-spacing:.2em;text-transform:uppercase;color:#7A7570;margin-bottom:6px;">Capitulo 5 &middot; Proximo</div>
+            <div style="font-size:18px;font-weight:500;margin-bottom:8px;">Simulador de Flujo de Caja</div>
+            <div style="font-size:13px;color:#7A7570;line-height:1.6;">Proyecta tu flujo mes a mes y detecta los puntos criticos de liquidez del proyecto.</div>
+          </div>
+        </div>
+
+        <!-- LAB 3 COMING SOON -->
+        <div style="background:var(--bg2);border:1px solid var(--dim);overflow:hidden;opacity:.5;">
+          <div style="height:130px;background:linear-gradient(135deg,#061510,#0D2018);display:flex;align-items:center;justify-content:center;">
+            <div style="font-size:44px;">&#127970;</div>
+          </div>
+          <div style="padding:20px;">
+            <div style="font-size:9px;letter-spacing:.2em;text-transform:uppercase;color:#7A7570;margin-bottom:6px;">Capitulo 6 &middot; Proximo</div>
+            <div style="font-size:18px;font-weight:500;margin-bottom:8px;">Calculadora de Financiamiento</div>
+            <div style="font-size:13px;color:#7A7570;line-height:1.6;">Estructura el expediente bancario ideal y calcula cuanto puedes solicitar al banco.</div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- LAB FULLSCREEN OVERLAY -->
+  <div id="lab-overlay" style="display:none;position:fixed;inset:0;z-index:500;background:#080808;flex-direction:column;">
+    <div style="height:50px;background:#0F0F0F;border-bottom:1px solid rgba(201,169,110,0.07);display:flex;align-items:center;justify-content:space-between;padding:0 20px;flex-shrink:0;">
+      <div style="display:flex;align-items:center;gap:14px;">
+        <button onclick="closeLab()" style="background:#161616;border:1px solid rgba(201,169,110,0.07);color:#7A7570;padding:7px 16px;font-size:11px;cursor:pointer;font-family:Outfit,sans-serif;letter-spacing:.08em;text-transform:uppercase;transition:all .2s;" onmouseover="this.style.color='#C9A96E'" onmouseout="this.style.color='#7A7570'">&larr; Volver al portal</button>
+        <div style="font-family:'Cormorant Garamond',serif;font-size:16px;color:#C9A96E;font-weight:600;letter-spacing:.08em;">RED <span style="color:#F0EBE0;font-weight:300;">ACADEMY</span></div>
+        <div style="width:1px;height:20px;background:rgba(201,169,110,0.07);"></div>
+        <div style="font-size:11px;color:#7A7570;letter-spacing:.1em;text-transform:uppercase;" id="lab-name">Laboratorio</div>
+      </div>
+      <div style="font-size:11px;color:#7A7570;">&#9883; Modulo interactivo &middot; RED Academy</div>
+    </div>
+    <iframe id="lab-iframe" style="flex:1;border:none;width:100%;height:calc(100vh - 50px);" src="" title="Laboratorio RED Academy"></iframe>
+  </div>
+
+  <!-- CERTIFICATE PAGE -->
+  <div class="page" id="page-certificate">
+    <div class="cert-wrap">
+      <div class="cert-box">
+        <div class="cert-logo">RED ACADEMY</div>
+        <div class="cert-title">Certifica que</div>
+        <div class="cert-name" id="cert-name">Mario Castillo</div>
+        <div style="font-size:14px;color:var(--muted);margin-bottom:16px;">ha completado satisfactoriamente el programa</div>
+        <div class="cert-course">Real Estate Developer Master</div>
+        <div class="cert-line"></div>
+        <div style="font-size:13px;color:var(--muted);margin-bottom:8px;" id="cert-pct-msg"></div>
+        <div class="cert-sign">Jorge Franco — Fundador, RED ACADEMY</div>
+        <button class="cert-print" onclick="window.print()">Descargar certificado →</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- COURSE PLAYER PAGE -->
+  <div class="page" id="page-player" style="flex-direction:row;height:calc(100vh - 60px);">
+
+    <!-- Curriculum Sidebar -->
+    <div class="curriculum">
+      <div class="curr-header">
+        <div class="curr-title" id="curr-course-title">Real Estate Developer Master</div>
+        <div class="curr-prog">
+          <div class="label">Tu progreso</div>
+          <div class="bar"><div class="fill" id="curr-fill" style="width:0%"></div></div>
+          <div class="pct" id="curr-pct">0% completado</div>
+        </div>
+      </div>
+      <div class="curr-scroll" id="curr-scroll"></div>
+    </div>
+
+    <!-- Video + Content -->
+    <div class="player-main">
+      <div class="video-area" id="video-area"></div>
+      <div class="player-scroll">
+        <div class="lesson-detail">
+          <div class="lesson-header">
+            <h2 id="les-title-display">Selecciona una lección</h2>
+            <button class="complete-btn" id="complete-btn" onclick="markComplete()">✓ Marcar completa</button>
+          </div>
+          <div class="lesson-desc" id="les-desc-display">Elige una lección del panel izquierdo para comenzar.</div>
+          <div class="lesson-mats" id="les-mats-display" style="display:none;"></div>
+        </div>
+        <div class="notes-area" id="notes-area" style="display:none;">
+          <h4>Mis notas</h4>
+          <textarea class="notes-ta" id="notes-ta" placeholder="Escribe tus notas de esta lección..."></textarea>
+          <button class="notes-save" onclick="saveNote()">Guardar nota</button>
+        </div>
+        <div class="lesson-nav" id="lesson-nav" style="display:none;">
+          <div class="nav-lesson-btn" id="prev-btn" onclick="prevLesson()">← Lección anterior</div>
+          <div class="nav-lesson-btn next-btn" id="next-btn" onclick="nextLesson()">Siguiente lección →</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div><!-- /app -->
+
+<div class="toast" id="toast"><div class="tdot" id="tdot"></div><span id="tmsg"></span></div>
+
+<script>
+const STORE_KEY='reda_admin_data';
+const PROG_KEY='reda_student_progress';
+let currentUser=null,currentLessonId=null,allLessons=[];
+
+function getData(){return JSON.parse(localStorage.getItem(STORE_KEY)||'{}');}
+function getProgress(){return JSON.parse(localStorage.getItem(PROG_KEY)||'{}');}
+function saveProgress(p){localStorage.setItem(PROG_KEY,JSON.stringify(p));}
+
+// ── FALLBACK DATA if admin hasn't set up ──
+function ensureData(){
+  let d=getData();
+  if(!d.students||!d.students.length){
+    d.students=[{id:1,name:'Mario Castillo',email:'mario@email.com',pass:'Bienvenido123',courses:['redm'],progress:65,lastAccess:'hoy',enrolled:'2025-03-10'}];
+    d.modules=[
+      {id:1,title:'Fundamentos del Mercado',lessons:[
+        {id:11,title:'Análisis de demanda y competencia',videoUrl:'https://www.youtube.com/embed/dQw4w9WgXcQ',duration:'22:14',hasVideo:true,desc:'Aprende a leer un mercado inmobiliario local. Veremos cómo identificar demanda real, analizar competidores activos y determinar el precio correcto por m².'},
+        {id:13,title:'Laboratorio: RED Feasibility Simulator',videoUrl:'',duration:'Interactivo',hasVideo:false,isLab:true,labFile:'RED_Feasibility_Simulator.html',desc:'Aplica lo aprendido en el Cap. 1. Analiza la factibilidad de un proyecto real usando el simulador RED: terreno, costos, ingresos y recomendacion final automatica.'},
+        {id:12,title:'Precios por m² y posicionamiento',videoUrl:'',duration:'18:30',hasVideo:false,desc:'Determina el precio de tu producto con base en el mercado real.'},
+      ]},
+      {id:2,title:'Selección y Evaluación de Terrenos',lessons:[
+        {id:21,title:'Criterios de selección de lotes',videoUrl:'',duration:'24:10',hasVideo:false,desc:'Los 8 criterios que determinan si un lote vale la pena.'},
+        {id:22,title:'Due diligence legal y físico',videoUrl:'',duration:'19:55',hasVideo:false,desc:'Cómo verificar que un terreno está limpio antes de comprar.'},
+      ]},
+      {id:3,title:'Estructuración Legal y Societaria',lessons:[
+        {id:31,title:'S.A. patrimonial: por qué y cómo',videoUrl:'',duration:'21:00',hasVideo:false,desc:'Protege tu patrimonio con la estructura correcta.'},
+        {id:32,title:'Permisos, títulos y contratos clave',videoUrl:'',duration:'17:45',hasVideo:false,desc:'Los documentos que protegen tu inversión.'},
+      ]},
+      {id:4,title:'Finanzas del Proyecto',lessons:[
+        {id:41,title:'Modelo de flujo de caja real',videoUrl:'',duration:'28:20',hasVideo:false,desc:'Construye el modelo financiero de tu proyecto desde cero.'},
+        {id:42,title:'TIR, VPN y análisis de sensibilidad',videoUrl:'',duration:'22:00',hasVideo:false,desc:'Interpreta los números que los bancos e inversores miran.'},
+      ]},
+      {id:5,title:'Diseño, Presupuesto y Construcción',lessons:[
+        {id:51,title:'Presupuesto capítulo por capítulo',videoUrl:'',duration:'26:15',hasVideo:false,desc:'Estructura un presupuesto real y defensible.'},
+        {id:52,title:'Control de avance y desvíos',videoUrl:'',duration:'15:30',hasVideo:false,desc:'Cómo detectar y corregir desviaciones antes de que duelan.'},
+      ]},
+      {id:6,title:'Financiamiento Bancario',lessons:[
+        {id:61,title:'Expediente para banco: estructura',videoUrl:'',duration:'23:40',hasVideo:false,desc:'Lo que el banco necesita ver para aprobarte.'},
+        {id:62,title:'Líneas de crédito rotativas',videoUrl:'',duration:'16:10',hasVideo:false,desc:'Cómo acceder a capital recurrente para múltiples proyectos.'},
+      ]},
+      {id:7,title:'Estrategia Comercial y Marketing',lessons:[
+        {id:71,title:'Preventa: financia con compradores',videoUrl:'',duration:'25:00',hasVideo:false,desc:'El modelo de preventa que cambia la ecuación de capital.'},
+        {id:72,title:'Meta Ads para proyectos inmobiliarios',videoUrl:'',duration:'20:30',hasVideo:false,desc:'Cómo generar leads calificados de compradores e inversores.'},
+      ]},
+      {id:8,title:'Escalamiento Operativo',lessons:[
+        {id:81,title:'Equipo y estructura para crecer',videoUrl:'',duration:'18:00',hasVideo:false,desc:'Las contrataciones que aceleran tu empresa inmobiliaria.'},
+        {id:82,title:'El camino al siguiente proyecto',videoUrl:'',duration:'14:20',hasVideo:false,desc:'Cómo usar el cierre de un proyecto para financiar el siguiente.'},
+      ]},
+    ];
+    d.products=[
+      {id:1,name:'Análisis de Factibilidad Inmobiliaria',type:'ebook',price:47,fileName:'factibilidad.pdf',uploaded:true},
+      {id:2,name:'Presupuesto de Construcción Maestro',type:'ebook',price:39,fileName:'presupuesto.pdf',uploaded:true},
+      {id:3,name:'Financiamiento Bancario para Desarrolladores',type:'ebook',price:49,fileName:'financiamiento.pdf',uploaded:true},
+      {id:4,name:'Modelo Financiero de Proyectos STR',type:'ebook',price:55,fileName:'str.pdf',uploaded:true},
+      {id:5,name:'Pack de Contratos para Desarrolladores',type:'contratos',price:69,fileName:'contratos.zip',uploaded:true},
+    ];
+    localStorage.setItem(STORE_KEY,JSON.stringify(d));
+  }
+  return d;
+}
+
+function doLogin(){
+  const email=document.getElementById('l-email').value.trim();
+  const pass=document.getElementById('l-pass').value;
+  const d=ensureData();
+  const user=d.students.find(s=>s.email===email&&s.pass===pass);
+  if(!user){document.getElementById('login-err').style.display='block';return;}
+  document.getElementById('login-err').style.display='none';
+  currentUser=user;
+  document.getElementById('login-screen').style.display='none';
+  document.getElementById('app').style.display='flex';
+  document.getElementById('app').style.flexDirection='column';
+  document.getElementById('user-av').textContent=user.name.split(' ').map(w=>w[0]).join('').slice(0,2);
+  document.getElementById('user-nm').textContent=user.name;
+  document.getElementById('welcome-name').textContent=user.name.split(' ')[0];
+  document.getElementById('cert-name').textContent=user.name;
+  renderDashboard();
+  renderResources();
+  buildAllLessons();
+}
+function doLogout(){
+  currentUser=null;
+  document.getElementById('login-screen').style.display='flex';
+  document.getElementById('app').style.display='none';
+}
+
+function goPage(p){
+  document.querySelectorAll('.page').forEach(el=>el.classList.remove('active'));
+  document.querySelectorAll('.nav-tab').forEach(el=>el.classList.remove('active'));
+  document.getElementById('page-'+p).classList.add('active');
+  const t=document.getElementById('tab-'+p);
+  if(t)t.classList.add('active');
+  if(p==='certificate') renderCert();
+  if(p==='labs') {} // labs page is static
+}
+
+function renderDashboard(){
+  const d=getData();
+  const prog=getProgress();
+  const completed=Object.values(prog).filter(v=>v).length;
+  const total=buildAllLessons();
+  const pct=total?Math.round(completed/total*100):0;
+
+  const cards=document.getElementById('course-cards');
+  cards.innerHTML=`
+    <div class="course-card" onclick="openCourse()">
+      <div class="course-thumb">
+        <div class="course-thumb-bg"></div>
+        <div class="course-thumb-title">Real Estate<br>Developer Master</div>
+        <div class="course-badge">REDM</div>
+      </div>
+      <div class="course-body">
+        <div class="course-title">Real Estate Developer Master</div>
+        <div class="course-meta">8 módulos · ${total} lecciones · Acceso de por vida</div>
+        <div class="prog-label"><span>Progreso</span><span>${pct}%</span></div>
+        <div class="prog-bar"><div class="prog-fill" style="width:${pct}%"></div></div>
+        <div class="resume-btn">
+          <span>${pct===0?'Comenzar':'Continuar donde lo dejaste'}</span>
+          <a>Abrir curso →</a>
+        </div>
+      </div>
+    </div>`;
+}
+
+function buildAllLessons(){
+  const d=getData();
+  allLessons=[];
+  (d.modules||[]).forEach(m=>m.lessons.forEach(l=>allLessons.push({...l,modId:m.id,modTitle:m.title})));
+  return allLessons.length;
+}
+
+function openCourse(){
+  goPage('player');
+  document.getElementById('tab-dashboard').classList.add('active');
+  buildCurriculum();
+  // auto-open first incomplete lesson
+  const prog=getProgress();
+  const first=allLessons.find(l=>!prog[l.id])||allLessons[0];
+  if(first) loadLesson(first.id);
+}
+
+function buildCurriculum(){
+  const d=getData();
+  const prog=getProgress();
+  const completed=Object.values(prog).filter(v=>v).length;
+  const total=allLessons.length;
+  const pct=total?Math.round(completed/total*100):0;
+  document.getElementById('curr-fill').style.width=pct+'%';
+  document.getElementById('curr-pct').textContent=pct+'% completado';
+
+  const scroll=document.getElementById('curr-scroll');
+  scroll.innerHTML=(d.modules||[]).map(m=>`
+    <div class="curr-module">
+      <div class="curr-mod-header" onclick="toggleMod(${m.id})">
+        <div>
+          <div class="curr-mod-num">Módulo ${String(m.id).padStart(2,'0')}</div>
+          <div class="curr-mod-title">${m.title}</div>
+        </div>
+        <div class="curr-mod-toggle" id="tog-${m.id}">▶</div>
+      </div>
+      <div class="curr-lessons" id="cmod-${m.id}">
+        ${m.lessons.map(l=>`
+          <div class="curr-lesson ${prog[l.id]?'completed':''} ${l.id===currentLessonId?'active':''}" id="cl-${l.id}" onclick="loadLesson(${l.id})">
+            <div class="lesson-check">${prog[l.id]?'✓':''}</div>
+            <div class="lesson-info">
+              <div class="lesson-name ${l.isLab?'':''+(!l.hasVideo?'no-video':'')}">${l.title}</div>
+              <div class="lesson-dur">${l.duration||'Próximamente'}</div>
+            </div>
+          </div>`).join('')}
+      </div>
+    </div>`).join('');
+  // open module containing current lesson
+  if(currentLessonId){
+    const les=allLessons.find(l=>l.id===currentLessonId);
+    if(les) toggleMod(les.modId,true);
+  } else { toggleMod((d.modules||[{}])[0]?.id,true); }
+}
+
+function toggleMod(id,forceOpen){
+  const el=document.getElementById('cmod-'+id);
+  const tog=document.getElementById('tog-'+id);
+  if(!el)return;
+  const open=forceOpen||el.classList.contains('open');
+  if(forceOpen){el.classList.add('open');if(tog)tog.style.transform='rotate(90deg)';return;}
+  el.classList.toggle('open');
+  if(tog)tog.style.transform=el.classList.contains('open')?'rotate(90deg)':'';
+}
+
+function loadLesson(id){
+  currentLessonId=id;
+  const les=allLessons.find(l=>l.id===id);
+  if(!les)return;
+
+  // Update sidebar active state
+  document.querySelectorAll('.curr-lesson').forEach(el=>el.classList.remove('active'));
+  const cl=document.getElementById('cl-'+id);
+  if(cl){cl.classList.add('active');cl.scrollIntoView({behavior:'smooth',block:'nearest'});}
+
+  // Video / Lab
+  const va=document.getElementById('video-area');
+  if(les.isLab){
+    va.innerHTML=`<div style="background:#0A0800;padding:32px;display:flex;align-items:center;justify-content:space-between;gap:24px;border-bottom:1px solid rgba(201,169,110,0.15);">
+      <div>
+        <div style="font-size:10px;letter-spacing:.2em;text-transform:uppercase;color:#C9A96E;margin-bottom:8px;">&#9883; LABORATORIO INTERACTIVO</div>
+        <div style="font-family:'Cormorant Garamond',serif;font-size:22px;font-weight:300;color:#F0EBE0;margin-bottom:6px;">${les.title.replace('⚗ ','')}</div>
+        <div style="font-size:13px;color:#7A7570;max-width:500px;line-height:1.6;">${les.desc}</div>
+      </div>
+      <button onclick="openLab('${les.title.replace('⚗ ','')}','${les.labFile}')"
+        style="background:#C9A96E;color:#080808;padding:14px 28px;font-size:12px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;border:none;cursor:pointer;font-family:Outfit,sans-serif;white-space:nowrap;flex-shrink:0;transition:background .2s;"
+        onmouseover="this.style.background='#E8D4A8'" onmouseout="this.style.background='#C9A96E'">
+        Abrir Simulador &rarr;
+      </button>
+    </div>`;
+  } else if(les.videoUrl){
+    va.innerHTML=`<iframe src="${les.videoUrl}" style="width:100%;height:360px;" allowfullscreen allow="autoplay"></iframe>`;
+  } else {
+    va.innerHTML=`<div class="no-video-state"><div class="play-icon">▶</div><p>Video próximamente disponible</p><p style="font-size:12px;margin-top:4px;">El instructor está preparando este contenido</p></div>`;
+  }
+
+  // Lesson info
+  document.getElementById('les-title-display').textContent=les.title;
+  document.getElementById('les-desc-display').textContent=les.desc||'Contenido de esta lección próximamente.';
+
+  // Complete button
+  const prog=getProgress();
+  const cb=document.getElementById('complete-btn');
+  cb.className='complete-btn'+(prog[id]?' done':'');
+  cb.textContent=prog[id]?'✓ Completada':'✓ Marcar completa';
+
+  // Materials
+  const mats=document.getElementById('les-mats-display');
+  if(les.materials&&les.materials.length){
+    mats.style.display='block';
+    mats.innerHTML=`<h4>Material descargable</h4>`+les.materials.map(m=>`<div class="mat-item"><span class="mat-icon">📄</span><span class="mat-name">${m.name}</span><span class="mat-dl">Descargar</span></div>`).join('');
+  } else { mats.style.display='none'; }
+
+  // Notes
+  const notes=getProgress();
+  document.getElementById('notes-ta').value=notes['note_'+id]||'';
+  document.getElementById('notes-area').style.display='block';
+  document.getElementById('lesson-nav').style.display='flex';
+
+  // Nav buttons
+  const idx=allLessons.findIndex(l=>l.id===id);
+  document.getElementById('prev-btn').style.opacity=idx===0?'0.3':'1';
+  document.getElementById('prev-btn').style.pointerEvents=idx===0?'none':'auto';
+  const nextBtn=document.getElementById('next-btn');
+  nextBtn.textContent=idx===allLessons.length-1?'Finalizar curso ✓':'Siguiente lección →';
+}
+
+function markComplete(){
+  if(!currentLessonId)return;
+  const prog=getProgress();
+  prog[currentLessonId]=true;
+  saveProgress(prog);
+  const cb=document.getElementById('complete-btn');
+  cb.className='complete-btn done';cb.textContent='✓ Completada';
+  const cl=document.getElementById('cl-'+currentLessonId);
+  if(cl){cl.classList.add('completed');cl.querySelector('.lesson-check').textContent='✓';}
+  // Update progress bar
+  const completed=Object.values(prog).filter(v=>v===true).length;
+  const pct=allLessons.length?Math.round(completed/allLessons.length*100):0;
+  document.getElementById('curr-fill').style.width=pct+'%';
+  document.getElementById('curr-pct').textContent=pct+'% completado';
+  showToast('Lección completada ✓');
+  if(pct>=100) setTimeout(()=>{goPage('certificate');showToast('¡Felicitaciones! Descarga tu certificado 🎓');},1200);
+}
+
+function prevLesson(){
+  const idx=allLessons.findIndex(l=>l.id===currentLessonId);
+  if(idx>0)loadLesson(allLessons[idx-1].id);
+}
+function nextLesson(){
+  const idx=allLessons.findIndex(l=>l.id===currentLessonId);
+  if(idx<allLessons.length-1){markComplete();loadLesson(allLessons[idx+1].id);}
+  else{markComplete();goPage('certificate');}
+}
+
+function saveNote(){
+  const prog=getProgress();
+  prog['note_'+currentLessonId]=document.getElementById('notes-ta').value;
+  saveProgress(prog);
+  showToast('Nota guardada');
+}
+
+function renderResources(){
+  const d=getData();
+  const icons={ebook:'📐',plantilla:'📊',contratos:'📋',otro:'📄'};
+  document.getElementById('res-grid').innerHTML=(d.products||[]).map(p=>`
+    <div class="resource-card">
+      <div class="resource-icon">${icons[p.type]||'📄'}</div>
+      <div class="resource-title">${p.name}</div>
+      <div class="resource-meta">${p.type.charAt(0).toUpperCase()+p.type.slice(1)} · Incluido en tu programa</div>
+      <div class="dl-btn" onclick="showToast('En producción: conecta un servidor de archivos o AWS S3')">⬇ Descargar</div>
+    </div>`).join('');
+}
+
+function renderCert(){
+  const prog=getProgress();
+  const completed=Object.values(prog).filter(v=>v===true).length;
+  const pct=allLessons.length?Math.round(completed/allLessons.length*100):0;
+  const msg=pct<100?`Has completado el ${pct}% del programa. Termina todas las lecciones para obtener el certificado oficial.`:`Completaste el 100% del programa el ${new Date().toLocaleDateString('es-ES')}.`;
+  document.getElementById('cert-pct-msg').textContent=msg;
+  if(currentUser)document.getElementById('cert-name').textContent=currentUser.name;
+}
+
+function showToast(msg){
+  const t=document.getElementById('toast');
+  document.getElementById('tmsg').textContent=msg;
+  t.classList.add('show');setTimeout(()=>t.classList.remove('show'),3000);
+}
+
+document.addEventListener('keydown',e=>{if(e.key==='Enter'&&document.getElementById('login-screen').style.display!=='none')doLogin();});
+
+function openLab(name, file){
+  const overlay = document.getElementById('lab-overlay');
+  const iframe  = document.getElementById('lab-iframe');
+  const lname   = document.getElementById('lab-name');
+  lname.textContent = name;
+  iframe.src = file;
+  overlay.style.display = 'flex';
+  document.body.style.overflow = 'hidden';
+}
+function closeLab(){
+  const overlay = document.getElementById('lab-overlay');
+  const iframe  = document.getElementById('lab-iframe');
+  overlay.style.display = 'none';
+  iframe.src = '';
+  document.body.style.overflow = '';
+}
+</script>
+</body>
+</html>
