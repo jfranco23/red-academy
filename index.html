@@ -731,7 +731,85 @@
     h1 { font-size: 48px; }
     .hero { padding: 100px 5vw 60px; }
   }
+
+  /* ===== LANGUAGE SELECTOR ===== */
+  .lang-selector {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    margin-right: 1rem;
+  }
+  .lang-btn {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    background: transparent;
+    border: 1px solid rgba(201,169,110,0.3);
+    color: var(--text-muted);
+    font-family: 'Outfit', sans-serif;
+    font-size: 12px;
+    font-weight: 400;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    padding: 6px 12px;
+    cursor: pointer;
+    transition: border-color 0.2s, color 0.2s;
+  }
+  .lang-btn:hover {
+    border-color: var(--gold);
+    color: var(--gold);
+  }
+  .lang-btn .lang-icon { width: 14px; height: 14px; opacity: 0.7; }
+  .lang-btn .lang-arrow { width: 10px; height: 10px; }
+  .lang-dropdown {
+    position: absolute;
+    top: calc(100% + 8px);
+    right: 0;
+    background: rgba(12,12,12,0.97);
+    border: 1px solid rgba(201,169,110,0.15);
+    backdrop-filter: blur(12px);
+    min-width: 140px;
+    z-index: 200;
+    display: none;
+    flex-direction: column;
+  }
+  .lang-dropdown.open { display: flex; }
+  .lang-option {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 16px;
+    font-family: 'Outfit', sans-serif;
+    font-size: 12px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    cursor: pointer;
+    transition: color 0.15s, background 0.15s;
+    border: none;
+    background: transparent;
+    width: 100%;
+    text-align: left;
+  }
+  .lang-option:hover { color: var(--gold); background: rgba(201,169,110,0.05); }
+  .lang-option.active { color: var(--gold); }
+  .lang-option .flag { font-size: 16px; line-height: 1; }
+  .goog-te-banner-frame, .skiptranslate { display: none !important; }
+  body { top: 0 !important; }
+  #google_translate_element { display: none !important; }
+  /* ===== END LANGUAGE SELECTOR ===== */
 </style>
+  <!-- Google Translate -->
+  <script type="text/javascript">
+    function googleTranslateElementInit() {
+      new google.translate.TranslateElement({
+        pageLanguage: 'es',
+        includedLanguages: 'en,es,pt,fr',
+        autoDisplay: false
+      }, 'google_translate_element');
+    }
+  </script>
+  <script src="//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit" async></script>
 </head>
 <body>
 
@@ -744,8 +822,38 @@
     <li><a href="#founder">Fundador</a></li>
     <li><a href="#testimonials">Testimonios</a></li>
   </ul>
+  <!-- SELECTOR DE IDIOMA -->
+  <div class="lang-selector">
+    <button class="lang-btn" id="langToggleBtn" aria-label="Seleccionar idioma">
+      <svg class="lang-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+        <circle cx="12" cy="12" r="10"/>
+        <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/>
+        <path d="M2 12h20"/>
+      </svg>
+      <span id="currentLangLabel">ES</span>
+      <svg class="lang-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M6 9l6 6 6-6"/>
+      </svg>
+    </button>
+    <div class="lang-dropdown" id="langDropdown">
+      <button class="lang-option active" data-lang="es" data-label="ES">
+        <span class="flag">🇪🇸</span> Español
+      </button>
+      <button class="lang-option" data-lang="en" data-label="EN">
+        <span class="flag">🇺🇸</span> English
+      </button>
+      <button class="lang-option" data-lang="pt" data-label="PT">
+        <span class="flag">🇧🇷</span> Português
+      </button>
+      <button class="lang-option" data-lang="fr" data-label="FR">
+        <span class="flag">🇫🇷</span> Français
+      </button>
+    </div>
+  </div>
+  <!-- FIN SELECTOR DE IDIOMA -->
   <a href="#products" class="nav-cta">Ver Catálogo</a>
 </nav>
+<div id="google_translate_element"></div>
 
 
 <!-- ── HERO ── -->
@@ -1210,5 +1318,59 @@
   </div>
 </footer>
 
+
+  <!-- Language Selector JS -->
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      var langBtn = document.getElementById('langToggleBtn');
+      var langDropdown = document.getElementById('langDropdown');
+      var currentLangLabel = document.getElementById('currentLangLabel');
+
+      if (!langBtn) return;
+
+      langBtn.addEventListener('click', function(e) {
+        e.stopPropagation();
+        langDropdown.classList.toggle('open');
+      });
+
+      document.addEventListener('click', function() {
+        langDropdown.classList.remove('open');
+      });
+
+      document.querySelectorAll('.lang-option').forEach(function(option) {
+        option.addEventListener('click', function() {
+          var lang = option.getAttribute('data-lang');
+          var label = option.getAttribute('data-label');
+
+          document.querySelectorAll('.lang-option').forEach(function(o) {
+            o.classList.remove('active');
+          });
+          option.classList.add('active');
+          currentLangLabel.textContent = label;
+          langDropdown.classList.remove('open');
+
+          // Reset previous cookies
+          document.cookie = 'googtrans=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';
+          document.cookie = 'googtrans=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/; domain=' + location.hostname;
+
+          if (lang !== 'es') {
+            var val = '/es/' + lang;
+            document.cookie = 'googtrans=' + val + '; path=/';
+            document.cookie = 'googtrans=' + val + '; path=/; domain=' + location.hostname;
+          }
+
+          setTimeout(function() {
+            var combo = document.querySelector('.goog-te-combo');
+            if (combo) {
+              combo.value = lang;
+              combo.dispatchEvent(new Event('change'));
+            } else {
+              location.reload();
+            }
+          }, 400);
+        });
+      });
+    });
+  </script>
 </body>
 </html>
