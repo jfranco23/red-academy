@@ -1,0 +1,362 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ebooks — RED ACADEMY</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;0,700;1,300;1,400&family=Outfit:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+:root{
+  --gold:#C9A96E;--gold-l:#E8D4A8;--gold-d:#9B7A45;
+  --bg:#080808;--bg2:#0F0F0F;--bg3:#151515;--bg4:#1C1C1C;
+  --text:#F5F0E8;--muted:#8A8578;--faint:#4A4640;
+  --b:rgba(201,169,110,0.18);--dim:rgba(201,169,110,0.07);
+}
+html{scroll-behavior:smooth;}
+body{background:var(--bg);color:var(--text);font-family:'Outfit',sans-serif;font-weight:300;overflow-x:hidden;}
+nav{position:fixed;top:0;left:0;right:0;z-index:100;display:flex;align-items:center;justify-content:space-between;padding:0 5vw;height:64px;background:rgba(8,8,8,0.92);backdrop-filter:blur(12px);border-bottom:1px solid var(--dim);}
+.nav-logo{font-family:'Cormorant Garamond',serif;font-size:20px;font-weight:600;letter-spacing:0.12em;color:var(--gold);text-decoration:none;}
+.nav-logo span{color:var(--text);font-weight:300;}
+.nav-links{display:flex;gap:2rem;list-style:none;}
+.nav-links a{color:var(--muted);text-decoration:none;font-size:12px;letter-spacing:0.08em;text-transform:uppercase;transition:color .2s;}
+.nav-links a:hover{color:var(--gold);}
+.nav-cta{background:var(--gold);color:#080808;padding:9px 22px;font-size:12px;font-weight:600;letter-spacing:0.1em;text-transform:uppercase;text-decoration:none;transition:background .2s;}
+.nav-cta:hover{background:var(--gold-l);}
+
+/* PAGE HEADER */
+.page-header{padding:130px 5vw 70px;border-bottom:1px solid var(--dim);}
+.eyebrow{font-size:11px;letter-spacing:0.25em;text-transform:uppercase;color:var(--gold);display:flex;align-items:center;gap:8px;margin-bottom:20px;}
+.eyebrow::before{content:'';display:block;width:32px;height:1px;background:var(--gold);}
+.page-header h1{font-family:'Cormorant Garamond',serif;font-size:clamp(40px,6vw,72px);font-weight:300;line-height:1;margin-bottom:16px;}
+.page-header h1 span{color:var(--gold);}
+.page-header p{color:var(--muted);font-size:16px;max-width:520px;line-height:1.7;}
+
+/* EBOOKS GRID */
+.ebooks-section{padding:80px 5vw;}
+.section-title{font-family:'Cormorant Garamond',serif;font-size:32px;font-weight:300;margin-bottom:48px;color:var(--gold);}
+.ebooks-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(340px,1fr));gap:32px;}
+.ebook-card{background:var(--bg2);border:1px solid var(--b);transition:border-color .3s,transform .3s;}
+.ebook-card:hover{border-color:var(--gold);transform:translateY(-4px);}
+.ebook-cover{background:var(--bg3);aspect-ratio:3/4;display:flex;align-items:center;justify-content:center;border-bottom:1px solid var(--dim);position:relative;overflow:hidden;}
+.ebook-cover-inner{text-align:center;padding:32px;}
+.ebook-cover-inner .cover-icon{font-size:56px;margin-bottom:16px;opacity:0.6;}
+.ebook-cover-inner h3{font-family:'Cormorant Garamond',serif;font-size:22px;font-weight:600;color:var(--gold);line-height:1.2;}
+.ebook-cover-inner p{font-size:11px;letter-spacing:0.1em;text-transform:uppercase;color:var(--muted);margin-top:8px;}
+.ebook-badge{position:absolute;top:16px;right:16px;background:var(--gold);color:#080808;font-size:10px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;padding:4px 10px;}
+.ebook-info{padding:28px;}
+.ebook-info h3{font-family:'Cormorant Garamond',serif;font-size:22px;font-weight:600;margin-bottom:8px;}
+.ebook-info .description{font-size:13px;color:var(--muted);line-height:1.6;margin-bottom:20px;}
+.ebook-info .includes{font-size:12px;color:var(--faint);margin-bottom:24px;}
+.ebook-info .includes span{color:var(--gold);margin-right:6px;}
+.ebook-footer{display:flex;align-items:center;justify-content:space-between;margin-top:auto;}
+.price{font-family:'Cormorant Garamond',serif;font-size:32px;font-weight:600;color:var(--gold);}
+.price-sub{font-family:'Outfit',sans-serif;font-size:11px;color:var(--muted);letter-spacing:0.08em;}
+.btn-buy{background:var(--gold);color:#080808;padding:12px 28px;font-size:12px;font-weight:600;letter-spacing:0.12em;text-transform:uppercase;text-decoration:none;border:none;cursor:pointer;transition:background .2s;}
+.btn-buy:hover{background:var(--gold-l);}
+.btn-buy:disabled{opacity:0.5;cursor:not-allowed;}
+
+/* FOOTER */
+footer{border-top:1px solid var(--dim);padding:40px 5vw;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:20px;}
+.footer-logo{font-family:'Cormorant Garamond',serif;font-size:18px;font-weight:600;color:var(--gold);}
+.footer-logo span{color:var(--text);font-weight:300;}
+footer p{color:var(--faint);font-size:12px;}
+
+/* MODAL PAYPAL */
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.85);z-index:1000;display:none;align-items:center;justify-content:center;padding:20px;}
+.modal-overlay.active{display:flex;}
+.modal{background:var(--bg2);border:1px solid var(--b);max-width:480px;width:100%;padding:40px;position:relative;}
+.modal-close{position:absolute;top:16px;right:16px;background:none;border:none;color:var(--muted);font-size:24px;cursor:pointer;line-height:1;}
+.modal-close:hover{color:var(--gold);}
+.modal h2{font-family:'Cormorant Garamond',serif;font-size:28px;font-weight:300;margin-bottom:8px;}
+.modal .modal-product{font-size:13px;color:var(--muted);margin-bottom:24px;border-bottom:1px solid var(--dim);padding-bottom:20px;}
+.modal .modal-price{font-family:'Cormorant Garamond',serif;font-size:40px;color:var(--gold);font-weight:600;margin-bottom:28px;}
+#paypal-button-container{min-height:120px;}
+.modal-loading{text-align:center;padding:24px;color:var(--muted);font-size:13px;}
+.modal-success{display:none;text-align:center;padding:24px;}
+.modal-success .success-icon{font-size:48px;margin-bottom:16px;}
+.modal-success h3{font-family:'Cormorant Garamond',serif;font-size:28px;font-weight:300;color:var(--gold);margin-bottom:8px;}
+.modal-success p{color:var(--muted);font-size:13px;margin-bottom:24px;}
+.btn-download{display:inline-block;background:var(--gold);color:#080808;padding:14px 32px;font-size:13px;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;text-decoration:none;}
+
+@media(max-width:768px){
+  .ebooks-grid{grid-template-columns:1fr;}
+  nav .nav-links{display:none;}
+}
+</style>
+</head>
+<body>
+
+<nav>
+  <a href="index.html" class="nav-logo">RED <span>ACADEMY</span></a>
+  <ul class="nav-links">
+    <li><a href="catalogo.html">Cursos</a></li>
+    <li><a href="ebooks.html" style="color:var(--gold)">Ebooks</a></li>
+    <li><a href="index.html#contacto">Contacto</a></li>
+  </ul>
+  <a href="portal.html" class="nav-cta">Portal</a>
+</nav>
+
+<header class="page-header">
+  <p class="eyebrow">Biblioteca Digital</p>
+  <h1>Ebooks <span>Especializados</span></h1>
+  <p>Guías prácticas y documentación profesional para desarrolladores inmobiliarios. Descarga instantánea tras el pago.</p>
+</header>
+
+<section class="ebooks-section">
+  <div class="ebooks-grid" id="ebooks-grid">
+
+    <!-- EBOOK 1: CONTRATOS -->
+    <div class="ebook-card">
+      <div class="ebook-cover">
+        <div class="ebook-badge">PDF</div>
+        <div class="ebook-cover-inner">
+          <div class="cover-icon">📋</div>
+          <h3>Pack de Contratos para Desarrolladores</h3>
+          <p>RED ACADEMY</p>
+        </div>
+      </div>
+      <div class="ebook-info">
+        <h3>Pack de Contratos para Desarrolladores</h3>
+        <p class="description">Plantillas profesionales de contratos listos para usar: compraventa, promesas, servicios y más. Redactados por expertos jurídicos en bienes raíces.</p>
+        <p class="includes"><span>✓</span> 15+ plantillas de contratos · <span>✓</span> Formato Word editable · <span>✓</span> Guía de uso</p>
+        <div class="ebook-footer">
+          <div>
+            <div class="price">$47 <span style="font-size:16px">USD</span></div>
+            <div class="price-sub">Descarga inmediata</div>
+          </div>
+          <button class="btn-buy" onclick="openCheckout('contratos','Pack de Contratos para Desarrolladores','47.00')">
+            Comprar ahora
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- EBOOK 2: FACTIBILIDAD -->
+    <div class="ebook-card">
+      <div class="ebook-cover">
+        <div class="ebook-badge">PDF</div>
+        <div class="ebook-cover-inner">
+          <div class="cover-icon">📊</div>
+          <h3>Análisis de Factibilidad Inmobiliaria</h3>
+          <p>RED ACADEMY</p>
+        </div>
+      </div>
+      <div class="ebook-info">
+        <h3>Análisis de Factibilidad Inmobiliaria</h3>
+        <p class="description">Metodología completa para evaluar la viabilidad de proyectos inmobiliarios: análisis de mercado, proyecciones financieras y métricas clave.</p>
+        <p class="includes"><span>✓</span> Modelo financiero Excel · <span>✓</span> Guía paso a paso · <span>✓</span> Casos de estudio</p>
+        <div class="ebook-footer">
+          <div>
+            <div class="price">$37 <span style="font-size:16px">USD</span></div>
+            <div class="price-sub">Descarga inmediata</div>
+          </div>
+          <button class="btn-buy" onclick="openCheckout('factibilidad','Análisis de Factibilidad Inmobiliaria','37.00')">
+            Comprar ahora
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- EBOOK 3: PRESUPUESTO -->
+    <div class="ebook-card">
+      <div class="ebook-cover">
+        <div class="ebook-badge">PDF</div>
+        <div class="ebook-cover-inner">
+          <div class="cover-icon">🏗️</div>
+          <h3>Presupuesto y Costos de Construcción</h3>
+          <p>RED ACADEMY</p>
+        </div>
+      </div>
+      <div class="ebook-info">
+        <h3>Presupuesto y Costos de Construcción</h3>
+        <p class="description">Guía definitiva para elaborar presupuestos de obra precisos, controlar costos y gestionar proveedores de manera eficiente.</p>
+        <p class="includes"><span>✓</span> Plantillas de presupuesto · <span>✓</span> Catálogo de conceptos · <span>✓</span> Control de obra</p>
+        <div class="ebook-footer">
+          <div>
+            <div class="price">$37 <span style="font-size:16px">USD</span></div>
+            <div class="price-sub">Descarga inmediata</div>
+          </div>
+          <button class="btn-buy" onclick="openCheckout('presupuesto','Presupuesto y Costos de Construcción','37.00')">
+            Comprar ahora
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- EBOOK 4: FINANCIAMIENTO -->
+    <div class="ebook-card">
+      <div class="ebook-cover">
+        <div class="ebook-badge">PDF</div>
+        <div class="ebook-cover-inner">
+          <div class="cover-icon">💰</div>
+          <h3>Financiamiento de Proyectos Inmobiliarios</h3>
+          <p>RED ACADEMY</p>
+        </div>
+      </div>
+      <div class="ebook-info">
+        <h3>Financiamiento de Proyectos Inmobiliarios</h3>
+        <p class="description">Estrategias para acceder a créditos bancarios, preventa, capital privado y otras fuentes de financiamiento para tu desarrollo.</p>
+        <p class="includes"><span>✓</span> Tipos de crédito · <span>✓</span> Modelos de capital · <span>✓</span> Presentaciones</p>
+        <div class="ebook-footer">
+          <div>
+            <div class="price">$37 <span style="font-size:16px">USD</span></div>
+            <div class="price-sub">Descarga inmediata</div>
+          </div>
+          <button class="btn-buy" onclick="openCheckout('financiamiento','Financiamiento de Proyectos Inmobiliarios','37.00')">
+            Comprar ahora
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- EBOOK 5: STR -->
+    <div class="ebook-card">
+      <div class="ebook-cover">
+        <div class="ebook-badge">PDF</div>
+        <div class="ebook-cover-inner">
+          <div class="cover-icon">🏠</div>
+          <h3>Short-Term Rentals Strategy</h3>
+          <p>RED ACADEMY</p>
+        </div>
+      </div>
+      <div class="ebook-info">
+        <h3>Short-Term Rentals Strategy</h3>
+        <p class="description">Guía completa para maximizar ingresos con Airbnb y plataformas STR: selección de mercado, optimización de listados y operación eficiente.</p>
+        <p class="includes"><span>✓</span> Análisis de mercado · <span>✓</span> Guía de operaciones · <span>✓</span> Calculadora ROI</p>
+        <div class="ebook-footer">
+          <div>
+            <div class="price">$47 <span style="font-size:16px">USD</span></div>
+            <div class="price-sub">Descarga inmediata</div>
+          </div>
+          <button class="btn-buy" onclick="openCheckout('str','Short-Term Rentals Strategy','47.00')">
+            Comprar ahora
+          </button>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- MODAL DE CHECKOUT PAYPAL -->
+<div class="modal-overlay" id="checkout-modal">
+  <div class="modal">
+    <button class="modal-close" onclick="closeCheckout()">×</button>
+    <h2>Completar compra</h2>
+    <p class="modal-product" id="modal-product-name">Nombre del ebook</p>
+    <div class="modal-price" id="modal-price">$47 USD</div>
+
+    <div id="paypal-button-container">
+      <div class="modal-loading">Cargando métodos de pago...</div>
+    </div>
+
+    <div class="modal-success" id="modal-success">
+      <div class="success-icon">✅</div>
+      <h3>¡Pago Exitoso!</h3>
+      <p id="success-message">Tu compra fue procesada correctamente. Haz clic para descargar tu ebook.</p>
+      <a href="#" id="download-btn" class="btn-download">Descargar Ebook →</a>
+      <p style="margin-top:16px;font-size:11px;color:var(--faint)">El enlace expira en 1 hora. Guarda tu PDF de inmediato.</p>
+    </div>
+  </div>
+</div>
+
+<footer>
+  <div class="footer-logo">RED <span>ACADEMY</span></div>
+  <p>© 2026 RED Academy. Todos los derechos reservados.</p>
+  <p style="font-size:11px;color:var(--faint)">Pagos seguros procesados por PayPal</p>
+</footer>
+
+<!-- PayPal JS SDK - Reemplaza TU_CLIENT_ID con tu Client ID de PayPal -->
+<script src="https://www.paypal.com/sdk/js?client-id=YOUR_PAYPAL_CLIENT_ID&currency=USD&intent=capture&components=buttons"></script>
+
+<script>
+let currentEbook = null;
+let paypalButtonsRendered = false;
+
+function openCheckout(ebookId, ebookTitle, price) {
+  currentEbook = { id: ebookId, title: ebookTitle, price: price };
+  document.getElementById('modal-product-name').textContent = ebookTitle;
+  document.getElementById('modal-price').textContent = '$' + price.replace('.00','') + ' USD';
+  document.getElementById('modal-success').style.display = 'none';
+  document.getElementById('paypal-button-container').innerHTML = '<div class="modal-loading">Cargando...</div>';
+  document.getElementById('checkout-modal').classList.add('active');
+  document.body.style.overflow = 'hidden';
+
+  // Render PayPal buttons
+  setTimeout(() => renderPayPalButtons(ebookId, ebookTitle, price), 100);
+}
+
+function closeCheckout() {
+  document.getElementById('checkout-modal').classList.remove('active');
+  document.body.style.overflow = '';
+  currentEbook = null;
+}
+
+function renderPayPalButtons(ebookId, ebookTitle, price) {
+  const container = document.getElementById('paypal-button-container');
+  container.innerHTML = '';
+
+  if (typeof paypal === 'undefined') {
+    container.innerHTML = '<p style="color:var(--muted);text-align:center;font-size:13px">Error al cargar PayPal. Recarga la página.</p>';
+    return;
+  }
+
+  paypal.Buttons({
+    style: {
+      layout: 'vertical',
+      color:  'gold',
+      shape:  'rect',
+      label:  'pay',
+      height: 48
+    },
+    createOrder: async () => {
+      const res = await fetch('/.netlify/functions/paypal-create-order', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ ebookId, ebookTitle, price, currency: 'USD' })
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || 'Error creando orden');
+      return data.id;
+    },
+    onApprove: async (data) => {
+      const res = await fetch('/.netlify/functions/paypal-capture-order', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ orderID: data.orderID, ebookId })
+      });
+      const result = await res.json();
+      if (!res.ok || !result.success) throw new Error(result.error || 'Error capturando pago');
+
+      // Mostrar éxito y link de descarga
+      document.getElementById('paypal-button-container').style.display = 'none';
+      const successDiv = document.getElementById('modal-success');
+      successDiv.style.display = 'block';
+      document.getElementById('download-btn').href = result.downloadUrl;
+      document.getElementById('success-message').textContent =
+        'Tu compra de "' + result.ebookTitle + '" fue procesada. Descarga tu PDF:';
+    },
+    onError: (err) => {
+      console.error('PayPal error:', err);
+      container.innerHTML = '<p style="color:#e74c3c;text-align:center;font-size:13px;padding:16px">Error al procesar el pago. Intenta de nuevo.</p>';
+    },
+    onCancel: () => {
+      container.innerHTML = '<div class="modal-loading">Pago cancelado. <button onclick="renderPayPalButtons(\''+ebookId+'\',\''+ebookTitle+'\',\''+price+'\')" style="color:var(--gold);background:none;border:none;cursor:pointer;text-decoration:underline;">Intentar de nuevo</button></div>';
+    }
+  }).render('#paypal-button-container');
+}
+
+// Cerrar modal con click fuera
+document.getElementById('checkout-modal').addEventListener('click', function(e) {
+  if (e.target === this) closeCheckout();
+});
+
+// Cerrar con ESC
+document.addEventListener('keydown', function(e) {
+  if (e.key === 'Escape') closeCheckout();
+});
+</script>
+
+</body>
+</html>
