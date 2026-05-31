@@ -4,6 +4,12 @@
 [build]
   publish = "."
 
+# Enlace de descarga del ebook tras el pago -> función serverless
+[[redirects]]
+  from = "/descargar-ebook"
+  to = "/.netlify/functions/paypal-download-ebook"
+  status = 200
+
 # Redirects para URLs sin extensión .html
 [[redirects]]
   from = "/catalogo"
