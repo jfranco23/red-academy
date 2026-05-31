@@ -148,7 +148,7 @@ footer p{color:var(--faint);font-size:12px;}
   <div class="ebooks-grid" id="ebooks-grid">
 
     <!-- EBOOK 1: CONTRATOS -->
-    <div class="ebook-card">
+    <div class="ebook-card" id="contratos">
       <div class="ebook-cover">
         <div class="ebook-badge">PDF</div>
         <div class="ebook-cover-inner">
@@ -174,7 +174,7 @@ footer p{color:var(--faint);font-size:12px;}
     </div>
 
     <!-- EBOOK 2: FACTIBILIDAD -->
-    <div class="ebook-card">
+    <div class="ebook-card" id="factibilidad">
       <div class="ebook-cover">
         <div class="ebook-badge">PDF</div>
         <div class="ebook-cover-inner">
@@ -200,7 +200,7 @@ footer p{color:var(--faint);font-size:12px;}
     </div>
 
     <!-- EBOOK 3: PRESUPUESTO -->
-    <div class="ebook-card">
+    <div class="ebook-card" id="presupuesto">
       <div class="ebook-cover">
         <div class="ebook-badge">PDF</div>
         <div class="ebook-cover-inner">
@@ -226,7 +226,7 @@ footer p{color:var(--faint);font-size:12px;}
     </div>
 
     <!-- EBOOK 4: FINANCIAMIENTO -->
-    <div class="ebook-card">
+    <div class="ebook-card" id="financiamiento">
       <div class="ebook-cover">
         <div class="ebook-badge">PDF</div>
         <div class="ebook-cover-inner">
@@ -252,7 +252,7 @@ footer p{color:var(--faint);font-size:12px;}
     </div>
 
     <!-- EBOOK 5: STR -->
-    <div class="ebook-card">
+    <div class="ebook-card" id="str">
       <div class="ebook-cover">
         <div class="ebook-badge">PDF</div>
         <div class="ebook-cover-inner">
@@ -436,5 +436,23 @@ document.addEventListener('keydown', function(e) {
 });
 </script>
 
+
+  <script>
+    // Auto-scroll to ebook if arriving via anchor link
+    window.addEventListener('DOMContentLoaded', function() {
+      const hash = window.location.hash;
+      if (hash) {
+        const el = document.querySelector(hash);
+        if (el) {
+          setTimeout(() => {
+            el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            // Highlight briefly
+            el.style.outline = '2px solid #C9A96E';
+            setTimeout(() => el.style.outline = '', 1500);
+          }, 300);
+        }
+      }
+    });
+  </script>
 </body>
 </html>
