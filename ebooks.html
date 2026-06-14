@@ -357,12 +357,30 @@ footer p{color:var(--faint);font-size:12px;}
   <p style="font-size:11px;color:var(--faint)">Pagos seguros procesados por PayPal</p>
 </footer>
 
-<!-- PayPal JS SDK - Reemplaza TU_CLIENT_ID con tu Client ID de PayPal -->
-<script src="https://www.paypal.com/sdk/js?client-id=AfQBou0AQiV-U35IvJrNf1ud1tIXYAHG4QF_Zl7uwFf2gTWzmMZAvcym4fxCQKstaMuVC4ziWZXe0T36&currency=USD&intent=capture&components=buttons"></script>
-
 <script>
-let currentEbook = null;
-let paypalButtonsRendered = false;
+// El SDK de PayPal se carga dinámicamente usando el Client ID público que entrega
+// la función /paypal-config (leído desde las variables de entorno en Netlify).
+let _paypalSdkPromise = null;
+
+function loadPayPalSdk() {
+  if (_paypalSdkPromise) return _paypalSdkPromise;
+  _paypalSdkPromise = fetch('/.netlify/functions/paypal-config')
+    .then(function(res) {
+      if (!res.ok) throw new Error('No se pudo obtener la configuración de PayPal');
+      return res.json();
+    })
+    .then(function(cfg) {
+      return new Promise(function(resolve, reject) {
+        const script = document.createElement('script');
+        script.src = 'https://www.paypal.com/sdk/js?client-id=' + encodeURIComponent(cfg.clientId) +
+          '&currency=' + encodeURIComponent(cfg.currency || 'USD') + '&intent=capture&components=buttons';
+        script.onload = function() { resolve(window.paypal); };
+        script.onerror = function() { reject(new Error('No se pudo cargar el SDK de PayPal')); };
+        document.head.appendChild(script);
+      });
+    });
+  return _paypalSdkPromise;
+}
 
 function openCheckout(productKey, productName, price) {
     document.getElementById('modal-product-name').textContent = productName;
@@ -375,54 +393,67 @@ function openCheckout(productKey, productName, price) {
     window._currentPrice = price;
     document.getElementById('checkout-modal').classList.add('active');
     document.getElementById('modal-success').style.display = 'none';
+    const successPanel = document.getElementById('modal-success');
+    if(successPanel) successPanel.style.display = 'none';
     const spWrapper = document.querySelector('.sp-wrapper');
     if(spWrapper) spWrapper.style.display = 'flex';
     renderPayPalButtons(productKey, productName, price);
   }
 
-  paypal.Buttons({
-    style: {
-      layout: 'vertical',
-      color:  'gold',
-      shape:  'rect',
-      label:  'pay',
-      height: 48
-    },
-    createOrder: async () => {
-      const res = await fetch('/.netlify/functions/paypal-create-order', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ ebookId, ebookTitle, price, currency: 'USD' })
-      });
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.error || 'Error creando orden');
-      return data.id;
-    },
-    onApprove: async (data) => {
-      const res = await fetch('/.netlify/functions/paypal-capture-order', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ orderID: data.orderID, ebookId })
-      });
-      const result = await res.json();
-      if (!res.ok || !result.success) throw new Error(result.error || 'Error capturando pago');
+function renderPayPalButtons(ebookId, ebookTitle, price) {
+  const container = document.getElementById('paypal-button-container');
+  container.style.display = '';
+  container.innerHTML = '<div class="modal-loading">Cargando métodos de pago...</div>';
 
-      // Mostrar éxito y link de descarga
-      document.getElementById('paypal-button-container').style.display = 'none';
-      const successDiv = document.getElementById('modal-success');
-      successDiv.style.display = 'block';
-      document.getElementById('download-btn').href = result.downloadUrl;
-      document.getElementById('success-message').textContent =
-        'Tu compra de "' + result.ebookTitle + '" fue procesada. Descarga tu PDF:';
-    },
-    onError: (err) => {
-      console.error('PayPal error:', err);
-      container.innerHTML = '<p style="color:#e74c3c;text-align:center;font-size:13px;padding:16px">Error al procesar el pago. Intenta de nuevo.</p>';
-    },
-    onCancel: () => {
-      container.innerHTML = '<div class="modal-loading">Pago cancelado. <button onclick="renderPayPalButtons(\''+ebookId+'\',\''+ebookTitle+'\',\''+price+'\')" style="color:var(--gold);background:none;border:none;cursor:pointer;text-decoration:underline;">Intentar de nuevo</button></div>';
-    }
-  }).render('#paypal-button-container');
+  loadPayPalSdk().then(function(paypal) {
+    container.innerHTML = '';
+    paypal.Buttons({
+      style: {
+        layout: 'vertical',
+        color:  'gold',
+        shape:  'rect',
+        label:  'pay',
+        height: 48
+      },
+      createOrder: async () => {
+        const res = await fetch('/.netlify/functions/paypal-create-order', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ ebookId, ebookTitle, price, currency: 'USD' })
+        });
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.error || 'Error creando orden');
+        return data.id;
+      },
+      onApprove: async (data) => {
+        const res = await fetch('/.netlify/functions/paypal-capture-order', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ orderID: data.orderID, ebookId })
+        });
+        const result = await res.json();
+        if (!res.ok || !result.success) throw new Error(result.error || 'Error capturando pago');
+
+        // Mostrar éxito y link de descarga
+        container.style.display = 'none';
+        const successDiv = document.getElementById('modal-success');
+        successDiv.style.display = 'block';
+        document.getElementById('download-btn').href = result.downloadUrl;
+        document.getElementById('success-message').textContent =
+          'Tu compra de "' + result.ebookTitle + '" fue procesada. Descarga tu PDF:';
+      },
+      onError: (err) => {
+        console.error('PayPal error:', err);
+        container.innerHTML = '<p style="color:#e74c3c;text-align:center;font-size:13px;padding:16px">Error al procesar el pago. Intenta de nuevo.</p>';
+      },
+      onCancel: () => {
+        container.innerHTML = '<div class="modal-loading">Pago cancelado. <button onclick="renderPayPalButtons(\''+ebookId+'\',\''+ebookTitle+'\',\''+price+'\')" style="color:var(--gold);background:none;border:none;cursor:pointer;text-decoration:underline;">Intentar de nuevo</button></div>';
+      }
+    }).render('#paypal-button-container');
+  }).catch(function(err) {
+    console.error('PayPal SDK error:', err);
+    container.innerHTML = '<p style="color:#e74c3c;text-align:center;font-size:13px;padding:16px">No se pudo cargar PayPal. Verifica la configuración e intenta de nuevo.</p>';
+  });
 }
 
 // Cerrar modal con click fuera
